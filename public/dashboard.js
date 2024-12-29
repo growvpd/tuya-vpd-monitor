@@ -1,5 +1,5 @@
 // URL do backend para buscar o histórico
-const apiUrl = 'http://127.0.0.1:3000/vpd/history';
+const apiUrl = '/vpd/history';
 
 // Função para criar o gráfico
 async function createChart() {
