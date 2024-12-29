@@ -32,7 +32,7 @@ async function createChart() {
       window.vpdChartInstance.destroy();
     }
 
-    // Criar o novo gráfico
+    // Criar o novo gráfico com faixas de cores
     window.vpdChartInstance = new Chart(ctx, {
       type: 'line', // Tipo do gráfico
       data: {
@@ -57,6 +57,53 @@ async function createChart() {
             display: true,
             text: 'Gráfico de VPD Médio (Agregado por 5 Minutos)',
           },
+          legend: {
+            display: true,
+          },
+          annotation: {
+            annotations: {
+              // Propagation / Early Veg Stage
+              greenZone: {
+                type: 'box',
+                xMin: 0, // O tempo é no eixo X, então deixamos a faixa global
+                xMax: labels.length - 1,
+                yMin: 0.4,
+                yMax: 0.8,
+                backgroundColor: 'rgba(0, 255, 0, 0.1)', // Verde claro
+                borderWidth: 0,
+              },
+              // Late Veg / Early Flower Stage
+              blueZone: {
+                type: 'box',
+                xMin: 0,
+                xMax: labels.length - 1,
+                yMin: 0.8,
+                yMax: 1.2,
+                backgroundColor: 'rgba(0, 0, 255, 0.1)', // Azul claro
+                borderWidth: 0,
+              },
+              // Mid / Late Flower Stage
+              purpleZone: {
+                type: 'box',
+                xMin: 0,
+                xMax: labels.length - 1,
+                yMin: 1.2,
+                yMax: 1.6,
+                backgroundColor: 'rgba(128, 0, 128, 0.1)', // Roxo claro
+                borderWidth: 0,
+              },
+              // Danger Zone (acima de 1.6)
+              redZone: {
+                type: 'box',
+                xMin: 0,
+                xMax: labels.length - 1,
+                yMin: 1.6,
+                yMax: Math.max(...vpds) + 0.1, // Extende até o máximo do gráfico
+                backgroundColor: 'rgba(255, 0, 0, 0.1)', // Vermelho claro
+                borderWidth: 0,
+              },
+            },
+          },
         },
         scales: {
           x: {
@@ -70,6 +117,8 @@ async function createChart() {
               display: true,
               text: 'VPD (kPa)',
             },
+            min: 0,
+            max: Math.max(...vpds) + 0.2, // Ajusta para acomodar faixas
           },
         },
         layout: {
@@ -79,13 +128,18 @@ async function createChart() {
           },
         },
       },
+      plugins: [
+        {
+          id: 'annotation', // Adiciona plugin para as faixas
+        },
+      ],
     });
   } catch (error) {
     console.error('Erro ao buscar dados:', error);
   }
 }
 
-// Função para exibir o VPD em tempo real com cores dinâmicas
+// Função para exibir o VPD em tempo real
 async function showRealTimeVPD() {
   try {
     const response = await fetch(realTimeUrl);
