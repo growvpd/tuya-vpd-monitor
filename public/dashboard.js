@@ -24,7 +24,7 @@ async function createChart() {
     ); // Formata data e hora para 5 minutos
     const vpds = data.map((item) => item.avgVPD); // Valores médios de VPD
 
-    // Configurar o gráfico
+    // Selecionar o canvas do gráfico
     const ctx = document.getElementById('vpdChart').getContext('2d');
 
     // Verifica se já existe um gráfico, destrói para recriar
@@ -32,47 +32,54 @@ async function createChart() {
       window.vpdChartInstance.destroy();
     }
 
-    new Chart(ctx, {
-      type: 'line',
+    // Criar o novo gráfico
+    window.vpdChartInstance = new Chart(ctx, {
+      type: 'line', // Tipo do gráfico
       data: {
-        labels,
-        datasets: [{
-          label: 'VPD Médio por 5 Minutos',
-          data: vpds,
-          borderColor: 'rgba(75, 192, 192, 1)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          borderWidth: 2,
-          fill: true,
-          tension: 0.4
-        }]
+        labels: labels, // Eixo X: tempo agrupado por 5 minutos
+        datasets: [
+          {
+            label: 'VPD Médio por 5 Minutos',
+            data: vpds, // Valores médios de VPD
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4, // Suaviza a linha
+          },
+        ],
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false, // Permite ajustar o gráfico para o tamanho do container
+        maintainAspectRatio: true, // Manter proporção adequada
         plugins: {
           title: {
             display: true,
-            text: 'Gráfico de VPD Médio (Agregado por 5 Minutos)'
-          }
+            text: 'Gráfico de VPD Médio (Agregado por 5 Minutos)',
+          },
         },
         scales: {
           x: {
             title: {
               display: true,
-              text: 'Tempo'
-            }
+              text: 'Tempo',
+            },
           },
           y: {
             title: {
               display: true,
-              text: 'VPD (kPa)'
+              text: 'VPD (kPa)',
             },
-            beginAtZero: true // Garante que o gráfico comece no zero
-          }
-        }
-      }
+          },
+        },
+        layout: {
+          padding: {
+            top: 10,
+            bottom: 10,
+          },
+        },
+      },
     });
-    
   } catch (error) {
     console.error('Erro ao buscar dados:', error);
   }
@@ -83,12 +90,6 @@ async function showRealTimeVPD() {
   try {
     const response = await fetch(realTimeUrl);
     const data = await response.json();
-
-    // Verificar se os dados de VPD são válidos
-    if (!data || typeof data.vpd === 'undefined') {
-      console.warn('Dados de VPD em tempo real não disponíveis.');
-      return;
-    }
 
     // Atualizar o valor no elemento HTML
     const vpdElement = document.getElementById('realTimeVPD');

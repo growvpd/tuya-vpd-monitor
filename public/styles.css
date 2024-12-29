@@ -28,14 +28,15 @@ header h1 {
     font-size: 1.5em;
 }
 
-/* Contêiner para o gráfico */
+/* Contêiner do gráfico */
 .chart-container {
-    position: relative;
-    width: 100%;
-    max-width: 800px; /* Limita o tamanho máximo do gráfico */
-    height: 400px; /* Altura fixa para manter proporção */
-    margin: 20px auto; /* Centraliza na página */
-}
+    width: 90%; /* Largura responsiva */
+    max-width: 1200px; /* Limite máximo */
+    height: 400px; /* Altura fixa */
+    margin: 20px auto;
+    overflow: hidden; /* Prevenir crescimento */
+    position: relative; /* Para evitar que elementos extrapolem o contêiner */
+  }
 
 /* Estilo para o canvas do gráfico */
 canvas {
