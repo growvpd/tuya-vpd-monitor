@@ -51,7 +51,7 @@ async function createChart() {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false, // Manter proporção adequada
+        maintainAspectRatio: false, // Permitir ajuste automático de altura
         plugins: {
           title: {
             display: true,
@@ -61,9 +61,9 @@ async function createChart() {
             display: true,
           },
           annotation: {
-            annotations: {
+            annotations: [
               // Faixa para Propagation / Early Veg Stage
-              greenZone: {
+              {
                 type: 'box',
                 yMin: 0.4,
                 yMax: 0.8,
@@ -71,7 +71,7 @@ async function createChart() {
                 borderWidth: 0,
               },
               // Faixa para Late Veg / Early Flower Stage
-              blueZone: {
+              {
                 type: 'box',
                 yMin: 0.8,
                 yMax: 1.2,
@@ -79,7 +79,7 @@ async function createChart() {
                 borderWidth: 0,
               },
               // Faixa para Mid / Late Flower Stage
-              purpleZone: {
+              {
                 type: 'box',
                 yMin: 1.2,
                 yMax: 1.6,
@@ -87,14 +87,14 @@ async function createChart() {
                 borderWidth: 0,
               },
               // Faixa para Danger Zone
-              redZone: {
+              {
                 type: 'box',
                 yMin: 1.6,
                 yMax: Math.max(...vpds) + 0.1, // Extende até o máximo do gráfico
                 backgroundColor: 'rgba(255, 0, 0, 0.1)', // Vermelho claro
                 borderWidth: 0,
               },
-            },
+            ],
           },
         },
         scales: {
@@ -113,16 +113,7 @@ async function createChart() {
             max: Math.max(...vpds) + 0.2, // Ajusta para acomodar faixas
           },
         },
-        layout: {
-          padding: {
-            top: 10,
-            bottom: 10,
-          },
-        },
       },
-      plugins: [
-        ChartAnnotationPlugin, // Certifique-se de incluir o plugin
-      ],
     });
   } catch (error) {
     console.error('Erro ao buscar dados:', error);
