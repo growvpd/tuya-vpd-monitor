@@ -51,7 +51,7 @@ async function createChart() {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true, // Manter proporção adequada
+        maintainAspectRatio: false, // Manter proporção adequada
         plugins: {
           title: {
             display: true,
@@ -62,7 +62,7 @@ async function createChart() {
           },
           annotation: {
             annotations: {
-              // Propagation / Early Veg Stage
+              // Faixa para Propagation / Early Veg Stage
               greenZone: {
                 type: 'box',
                 yMin: 0.4,
@@ -70,7 +70,7 @@ async function createChart() {
                 backgroundColor: 'rgba(0, 255, 0, 0.1)', // Verde claro
                 borderWidth: 0,
               },
-              // Late Veg / Early Flower Stage
+              // Faixa para Late Veg / Early Flower Stage
               blueZone: {
                 type: 'box',
                 yMin: 0.8,
@@ -78,7 +78,7 @@ async function createChart() {
                 backgroundColor: 'rgba(0, 0, 255, 0.1)', // Azul claro
                 borderWidth: 0,
               },
-              // Mid / Late Flower Stage
+              // Faixa para Mid / Late Flower Stage
               purpleZone: {
                 type: 'box',
                 yMin: 1.2,
@@ -86,7 +86,7 @@ async function createChart() {
                 backgroundColor: 'rgba(128, 0, 128, 0.1)', // Roxo claro
                 borderWidth: 0,
               },
-              // Danger Zone (acima de 1.6)
+              // Faixa para Danger Zone
               redZone: {
                 type: 'box',
                 yMin: 1.6,
@@ -121,7 +121,7 @@ async function createChart() {
         },
       },
       plugins: [
-        ChartAnnotation, // Certifica-se de incluir o plugin
+        ChartAnnotationPlugin, // Certifique-se de incluir o plugin
       ],
     });
   } catch (error) {
