@@ -43,6 +43,7 @@ canvas {
     max-width: 100%; /* Ajusta a largura ao container */
     height: 100%; /* Adapta ao tamanho do container */
     display: block;
+    height: 400px; /* Ajuste conforme necessário */
 }
 
 /* Contêiner principal para centralizar o conteúdo */
