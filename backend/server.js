@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');1
+const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
 const { fetchTuyaData, extractTemperatureAndHumidity } = require('./tuya');
@@ -9,11 +9,9 @@ const app = express();
 const PORT = 3000; // Porta onde o servidor vai rodar
 
 // Configuração do MongoDB
+require('dotenv').config(); // Carregar variáveis de ambiente do arquivo .env
 
-require('dotenv').config(); // Certifique-se de ter instalado dotenv (npm install dotenv)
-
-mongoose.connect(process.env.MONGODB_URI, {
-})
+mongoose.connect(process.env.MONGODB_URI, {})
   .then(() => console.log('Conectado ao MongoDB!'))
   .catch(err => console.error('Erro ao conectar ao MongoDB:', err));
 
@@ -32,15 +30,31 @@ app.use(cors());
 // Servir arquivos estáticos na pasta "public"
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Rota para acessar o gráfico
+// Rota para acessar o gráfico principal
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
-// Rota para consultar o histórico
+// Rota para consultar o histórico agrupado por hora
 app.get('/vpd/history', async (req, res) => {
   try {
-    const history = await VPDData.find().sort({ timestamp: -1 });
+    const history = await VPDData.aggregate([
+      {
+        $group: {
+          _id: {
+            hour: { $hour: "$timestamp" },
+            day: { $dayOfMonth: "$timestamp" },
+            month: { $month: "$timestamp" },
+            year: { $year: "$timestamp" }
+          },
+          avgVPD: { $avg: "$vpd" },
+          avgTemperature: { $avg: "$temperature" },
+          avgHumidity: { $avg: "$humidity" }
+        }
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1, "_id.hour": 1 } }
+    ]);
+
     res.json(history);
   } catch (error) {
     console.error('Erro ao buscar histórico:', error.message);
@@ -106,4 +120,3 @@ setInterval(saveVPDData, 15000);
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
-
