@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+const cors = require('cors');1
 const mongoose = require('mongoose');
 const path = require('path');
 const { fetchTuyaData, extractTemperatureAndHumidity } = require('./tuya');
@@ -9,7 +9,13 @@ const app = express();
 const PORT = 3000; // Porta onde o servidor vai rodar
 
 // Configuração do MongoDB
-mongoose.connect('mongodb://127.0.0.1:27017/vpd_data', {})
+
+require('dotenv').config(); // Certifique-se de ter instalado dotenv (npm install dotenv)
+
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
   .then(() => console.log('Conectado ao MongoDB!'))
   .catch(err => console.error('Erro ao conectar ao MongoDB:', err));
 
@@ -102,3 +108,4 @@ setInterval(saveVPDData, 15000);
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+
