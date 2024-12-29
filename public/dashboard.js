@@ -11,13 +11,22 @@ async function createChart() {
 
     // Processar os dados agregados
     const labels = data.map(
-      (item) => `${item._id.day}/${item._id.month} ${item._id.hour}:${String(item._id.minutes).padStart(2, '0')}`
+      (item) =>
+        `${item._id.day}/${item._id.month} ${item._id.hour}:${String(
+          item._id.minutes
+        ).padStart(2, '0')}`
     ); // Formata data e hora para 5 minutos
     const vpds = data.map((item) => item.avgVPD); // Valores médios de VPD
 
     // Configurar o gráfico
     const ctx = document.getElementById('vpdChart').getContext('2d');
-    new Chart(ctx, {
+
+    // Verifica se já existe um gráfico, destrói para recriar
+    if (window.vpdChartInstance) {
+      window.vpdChartInstance.destroy();
+    }
+
+    window.vpdChartInstance = new Chart(ctx, {
       type: 'line', // Tipo do gráfico
       data: {
         labels: labels, // Eixo X: tempo agrupado por 5 minutos
@@ -35,6 +44,7 @@ async function createChart() {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false, // Permitir ajuste automático de altura
         plugins: {
           title: {
             display: true,
@@ -70,7 +80,7 @@ async function showRealTimeVPD() {
 
     // Atualizar o valor no elemento HTML
     const vpdElement = document.getElementById('realTimeVPD');
-    vpdElement.innerHTML = `VPD Atual: ${data.vpd} kPa`;
+    vpdElement.innerHTML = `VPD Atual: ${parseFloat(data.vpd).toFixed(2)} kPa`;
   } catch (error) {
     console.error('Erro ao buscar dados em tempo real:', error);
   }

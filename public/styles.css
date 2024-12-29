@@ -45,6 +45,15 @@ body {
     padding: 10px;
   }
   
+  /* Estilo para o valor do VPD em tempo real */
+  .current-vpd {
+    font-size: 1.5em;
+    color: #4CAF50; /* Verde para destacar */
+    margin: 10px 0;
+    text-align: center;
+    font-weight: bold;
+  }
+  
   /* Estilo responsivo */
   @media (max-width: 768px) {
     header {
@@ -58,6 +67,10 @@ body {
     canvas {
       max-width: 100%;
     }
+  
+    .current-vpd {
+      font-size: 1.2em; /* Ajusta o tamanho para telas menores */
+    }
   }
   
   @media (max-width: 480px) {
@@ -67,6 +80,10 @@ body {
   
     header h1 {
       font-size: 1em;
+    }
+  
+    .current-vpd {
+      font-size: 1em; /* Ajusta ainda mais o tamanho em dispositivos muito pequenos */
     }
   }
   
