@@ -8,24 +8,27 @@ async function createChart() {
     const response = await fetch(apiUrl);
     const data = await response.json();
 
-    // Processar os dados
-    const timestamps = data.map(item => new Date(item.timestamp).toLocaleString()); // Converte timestamps para formato legível
-    const vpds = data.map(item => item.vpd); // Extrai os valores de VPD
+    // Processar os dados agregados
+    const labels = data.map(
+      (item) => `${item._id.day}/${item._id.month} ${item._id.hour}:00`
+    ); // Converte os dados de agrupamento para formato legível
+    const vpds = data.map((item) => item.avgVPD); // Valores médios de VPD
 
     // Configurar o gráfico
     const ctx = document.getElementById('vpdChart').getContext('2d');
     new Chart(ctx, {
       type: 'line', // Tipo do gráfico
       data: {
-        labels: timestamps, // Eixo X: tempo
+        labels: labels, // Eixo X: tempo agregado por hora
         datasets: [
           {
-            label: 'VPD ao longo do tempo',
-            data: vpds, // Valores de VPD
+            label: 'VPD Médio por Hora',
+            data: vpds, // Valores médios de VPD
             borderColor: 'rgba(75, 192, 192, 1)',
             backgroundColor: 'rgba(75, 192, 192, 0.2)',
             borderWidth: 2,
             fill: true,
+            tension: 0.4, // Suaviza a linha
           },
         ],
       },
@@ -34,20 +37,20 @@ async function createChart() {
         plugins: {
           title: {
             display: true,
-            text: 'Gráfico de VPD (Deficit de Pressão de Vapor)',
+            text: 'Gráfico de VPD Médio (Agregado por Hora)',
           },
         },
         scales: {
           x: {
             title: {
               display: true,
-              text: 'Tempo',
+              text: 'Hora do Dia',
             },
           },
           y: {
             title: {
               display: true,
-              text: 'VPD (kPa)',
+              text: 'VPD Médio (kPa)',
             },
           },
         },
@@ -61,4 +64,5 @@ async function createChart() {
 // Chamar a função para criar o gráfico
 createChart();
 
-setInterval(createChart, 15000); // Atualiza o gráfico a cada 15 segundos
+// Atualiza o gráfico a cada 15 minutos para refletir novos dados no backend
+setInterval(createChart, 900000); // Atualização a cada 15 minutos (900000ms)
