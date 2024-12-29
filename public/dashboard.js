@@ -32,50 +32,47 @@ async function createChart() {
       window.vpdChartInstance.destroy();
     }
 
-    window.vpdChartInstance = new Chart(ctx, {
-      type: 'line', // Tipo do gráfico
+    new Chart(ctx, {
+      type: 'line',
       data: {
-        labels: labels, // Eixo X: tempo agrupado por 5 minutos
-        datasets: [
-          {
-            label: 'VPD Médio por 5 Minutos',
-            data: vpds, // Valores médios de VPD
-            borderColor: 'rgba(75, 192, 192, 1)',
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.4, // Suaviza a linha
-          },
-        ],
+        labels,
+        datasets: [{
+          label: 'VPD Médio por 5 Minutos',
+          data: vpds,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4
+        }]
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false, // Permitir ajuste automático de altura
+        maintainAspectRatio: false, // Permite ajustar o gráfico para o tamanho do container
         plugins: {
           title: {
             display: true,
-            text: 'Gráfico de VPD Médio (Agregado por 5 Minutos)',
-          },
+            text: 'Gráfico de VPD Médio (Agregado por 5 Minutos)'
+          }
         },
         scales: {
           x: {
             title: {
               display: true,
-              text: 'Tempo',
-            },
+              text: 'Tempo'
+            }
           },
           y: {
             title: {
               display: true,
-              text: 'VPD (kPa)',
+              text: 'VPD (kPa)'
             },
-            beginAtZero: true, // Garante que o eixo Y comece em 0
-            suggestedMax: Math.max(...vpds) + 0.5, // Ajusta o limite máximo para ficar levemente acima do maior valor
-            suggestedMin: 0
-          },
-        },
-      },
+            beginAtZero: true // Garante que o gráfico comece no zero
+          }
+        }
+      }
     });
+    
   } catch (error) {
     console.error('Erro ao buscar dados:', error);
   }
