@@ -71,6 +71,7 @@ async function createChart() {
             },
             beginAtZero: true, // Garante que o eixo Y comece em 0
             suggestedMax: Math.max(...vpds) + 0.5, // Ajusta o limite máximo para ficar levemente acima do maior valor
+            suggestedMin: 0
           },
         },
       },
