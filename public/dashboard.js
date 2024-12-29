@@ -51,7 +51,7 @@ async function createChart() {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false, // Permitir ajuste automático de altura
+        maintainAspectRatio: true, // Manter proporção adequada
         plugins: {
           title: {
             display: true,
@@ -61,40 +61,48 @@ async function createChart() {
             display: true,
           },
           annotation: {
-            annotations: [
-              // Faixa para Propagation / Early Veg Stage
-              {
+            annotations: {
+              // Propagation / Early Veg Stage
+              greenZone: {
                 type: 'box',
+                xMin: 0, // O tempo é no eixo X, então deixamos a faixa global
+                xMax: labels.length - 1,
                 yMin: 0.4,
                 yMax: 0.8,
                 backgroundColor: 'rgba(0, 255, 0, 0.1)', // Verde claro
                 borderWidth: 0,
               },
-              // Faixa para Late Veg / Early Flower Stage
-              {
+              // Late Veg / Early Flower Stage
+              blueZone: {
                 type: 'box',
+                xMin: 0,
+                xMax: labels.length - 1,
                 yMin: 0.8,
                 yMax: 1.2,
                 backgroundColor: 'rgba(0, 0, 255, 0.1)', // Azul claro
                 borderWidth: 0,
               },
-              // Faixa para Mid / Late Flower Stage
-              {
+              // Mid / Late Flower Stage
+              purpleZone: {
                 type: 'box',
+                xMin: 0,
+                xMax: labels.length - 1,
                 yMin: 1.2,
                 yMax: 1.6,
                 backgroundColor: 'rgba(128, 0, 128, 0.1)', // Roxo claro
                 borderWidth: 0,
               },
-              // Faixa para Danger Zone
-              {
+              // Danger Zone (acima de 1.6)
+              redZone: {
                 type: 'box',
+                xMin: 0,
+                xMax: labels.length - 1,
                 yMin: 1.6,
                 yMax: Math.max(...vpds) + 0.1, // Extende até o máximo do gráfico
                 backgroundColor: 'rgba(255, 0, 0, 0.1)', // Vermelho claro
                 borderWidth: 0,
               },
-            ],
+            },
           },
         },
         scales: {
@@ -113,7 +121,18 @@ async function createChart() {
             max: Math.max(...vpds) + 0.2, // Ajusta para acomodar faixas
           },
         },
+        layout: {
+          padding: {
+            top: 10,
+            bottom: 10,
+          },
+        },
       },
+      plugins: [
+        {
+          id: 'annotation', // Adiciona plugin para as faixas
+        },
+      ],
     });
   } catch (error) {
     console.error('Erro ao buscar dados:', error);
