@@ -85,15 +85,33 @@ async function createChart() {
   }
 }
 
-// Função para exibir o VPD em tempo real
+// Função para exibir o VPD em tempo real com cores dinâmicas
 async function showRealTimeVPD() {
   try {
     const response = await fetch(realTimeUrl);
     const data = await response.json();
 
-    // Atualizar o valor no elemento HTML
     const vpdElement = document.getElementById('realTimeVPD');
-    vpdElement.innerHTML = `VPD Atual: ${parseFloat(data.vpd).toFixed(2)} kPa`;
+    const vpdValue = parseFloat(data.vpd).toFixed(2);
+
+    // Alterar o texto e cor baseado no valor do VPD
+    if (vpdValue < 0.4 || vpdValue > 1.6) {
+      // Danger Zone
+      vpdElement.style.color = 'red';
+      vpdElement.innerHTML = `VPD Atual: ${vpdValue} kPa (Danger Zone)`;
+    } else if (vpdValue >= 0.4 && vpdValue < 0.8) {
+      // Propagation / Early Veg Stage
+      vpdElement.style.color = 'green';
+      vpdElement.innerHTML = `VPD Atual: ${vpdValue} kPa (Propagation / Early Veg Stage)`;
+    } else if (vpdValue >= 0.8 && vpdValue < 1.2) {
+      // Late Veg / Early Flower Stage
+      vpdElement.style.color = 'blue';
+      vpdElement.innerHTML = `VPD Atual: ${vpdValue} kPa (Late Veg / Early Flower Stage)`;
+    } else if (vpdValue >= 1.2 && vpdValue <= 1.6) {
+      // Mid / Late Flower Stage
+      vpdElement.style.color = 'purple';
+      vpdElement.innerHTML = `VPD Atual: ${vpdValue} kPa (Mid / Late Flower Stage)`;
+    }
   } catch (error) {
     console.error('Erro ao buscar dados em tempo real:', error);
   }
