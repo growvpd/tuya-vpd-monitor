@@ -1,5 +1,5 @@
 // URL do backend para buscar o histórico
-const apiUrl = '/vpd/history';
+const apiUrl = 'https://tuya-vpd-monitor.onrender.com/vpd/history';
 
 // Função para criar o gráfico
 async function createChart() {
