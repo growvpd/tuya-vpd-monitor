@@ -1,0 +1,72 @@
+/* Estilo global */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: #f9f9f9; /* Cor de fundo clara */
+    min-height: 100vh;
+  }
+  
+  /* Estilo para o cabeçalho */
+  header {
+    width: 100%;
+    background-color: #4CAF50; /* Verde */
+    padding: 15px 0;
+    color: white;
+    text-align: center;
+    font-size: 1.8em;
+    font-weight: bold;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  header h1 {
+    margin: 0;
+    font-size: 1.5em;
+  }
+  
+  /* Estilo para o canvas do gráfico */
+  canvas {
+    max-width: 90%;
+    height: auto;
+    margin: 20px 0;
+  }
+  
+  /* Contêiner principal para centralizar o conteúdo */
+  main {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+  }
+  
+  /* Estilo responsivo */
+  @media (max-width: 768px) {
+    header {
+      font-size: 1.4em;
+    }
+  
+    header h1 {
+      font-size: 1.2em;
+    }
+  
+    canvas {
+      max-width: 100%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    header {
+      font-size: 1.2em;
+    }
+  
+    header h1 {
+      font-size: 1em;
+    }
+  }
+  
