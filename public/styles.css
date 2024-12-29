@@ -32,7 +32,7 @@ header h1 {
 .chart-container {
     width: 90%; /* Largura responsiva */
     max-width: 1200px; /* Limite máximo */
-    height: 400px; /* Altura fixa */
+    height: 600px; /* Altura fixa */
     margin: 20px auto;
     overflow: hidden; /* Prevenir crescimento */
     position: relative; /* Para evitar que elementos extrapolem o contêiner */
