@@ -35,24 +35,25 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
-// Rota para consultar o histórico agrupado por hora
+// Rota para consultar o histórico agrupado a cada 5 minutos
 app.get('/vpd/history', async (req, res) => {
   try {
     const history = await VPDData.aggregate([
       {
         $group: {
           _id: {
-            hour: { $hour: "$timestamp" },
-            day: { $dayOfMonth: "$timestamp" },
+            year: { $year: "$timestamp" },
             month: { $month: "$timestamp" },
-            year: { $year: "$timestamp" }
+            day: { $dayOfMonth: "$timestamp" },
+            hour: { $hour: "$timestamp" },
+            minutes: { $subtract: [{ $minute: "$timestamp" }, { $mod: [{ $minute: "$timestamp" }, 5] }] }, // Agrupar a cada 5 minutos
           },
           avgVPD: { $avg: "$vpd" },
           avgTemperature: { $avg: "$temperature" },
           avgHumidity: { $avg: "$humidity" }
         }
       },
-      { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1, "_id.hour": 1 } }
+      { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1, "_id.hour": 1, "_id.minutes": 1 } }
     ]);
 
     res.json(history);
@@ -61,6 +62,7 @@ app.get('/vpd/history', async (req, res) => {
     res.status(500).json({ error: 'Erro ao buscar histórico.' });
   }
 });
+
 
 // Função para calcular o VPD
 function calculateVPD(temperature, humidity) {

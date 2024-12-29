@@ -1,5 +1,6 @@
 // URL do backend para buscar o histórico
 const apiUrl = 'https://tuya-vpd-monitor.onrender.com/vpd/history';
+const realTimeUrl = 'https://tuya-vpd-monitor.onrender.com/vpd'; // Para dados em tempo real
 
 // Função para criar o gráfico
 async function createChart() {
@@ -10,8 +11,8 @@ async function createChart() {
 
     // Processar os dados agregados
     const labels = data.map(
-      (item) => `${item._id.day}/${item._id.month} ${item._id.hour}:00`
-    ); // Converte os dados de agrupamento para formato legível
+      (item) => `${item._id.day}/${item._id.month} ${item._id.hour}:${String(item._id.minutes).padStart(2, '0')}`
+    ); // Formata data e hora para 5 minutos
     const vpds = data.map((item) => item.avgVPD); // Valores médios de VPD
 
     // Configurar o gráfico
@@ -19,10 +20,10 @@ async function createChart() {
     new Chart(ctx, {
       type: 'line', // Tipo do gráfico
       data: {
-        labels: labels, // Eixo X: tempo agregado por hora
+        labels: labels, // Eixo X: tempo agrupado por 5 minutos
         datasets: [
           {
-            label: 'VPD Médio por Hora',
+            label: 'VPD Médio por 5 Minutos',
             data: vpds, // Valores médios de VPD
             borderColor: 'rgba(75, 192, 192, 1)',
             backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -37,20 +38,20 @@ async function createChart() {
         plugins: {
           title: {
             display: true,
-            text: 'Gráfico de VPD Médio (Agregado por Hora)',
+            text: 'Gráfico de VPD Médio (Agregado por 5 Minutos)',
           },
         },
         scales: {
           x: {
             title: {
               display: true,
-              text: 'Hora do Dia',
+              text: 'Tempo',
             },
           },
           y: {
             title: {
               display: true,
-              text: 'VPD Médio (kPa)',
+              text: 'VPD (kPa)',
             },
           },
         },
@@ -61,8 +62,24 @@ async function createChart() {
   }
 }
 
-// Chamar a função para criar o gráfico
-createChart();
+// Função para exibir o VPD em tempo real
+async function showRealTimeVPD() {
+  try {
+    const response = await fetch(realTimeUrl);
+    const data = await response.json();
 
-// Atualiza o gráfico a cada 15 minutos para refletir novos dados no backend
-setInterval(createChart, 900000); // Atualização a cada 15 minutos (900000ms)
+    // Atualizar o valor no elemento HTML
+    const vpdElement = document.getElementById('realTimeVPD');
+    vpdElement.innerHTML = `VPD Atual: ${data.vpd} kPa`;
+  } catch (error) {
+    console.error('Erro ao buscar dados em tempo real:', error);
+  }
+}
+
+// Chamar as funções para criar o gráfico e mostrar o VPD em tempo real
+createChart();
+showRealTimeVPD();
+
+// Atualiza o gráfico a cada 5 minutos e o VPD em tempo real a cada 15 segundos
+setInterval(createChart, 300000); // Atualiza o gráfico a cada 5 minutos (300000ms)
+setInterval(showRealTimeVPD, 15000); // Atualiza o VPD em tempo real a cada 15 segundos
