@@ -9,6 +9,12 @@ async function createChart() {
     const response = await fetch(apiUrl);
     const data = await response.json();
 
+    // Verificar se há dados retornados
+    if (!data || data.length === 0) {
+      console.warn('Nenhum dado disponível para o gráfico.');
+      return;
+    }
+
     // Processar os dados agregados
     const labels = data.map(
       (item) =>
@@ -63,6 +69,8 @@ async function createChart() {
               display: true,
               text: 'VPD (kPa)',
             },
+            beginAtZero: true, // Garante que o eixo Y comece em 0
+            suggestedMax: Math.max(...vpds) + 0.5, // Ajusta o limite máximo para ficar levemente acima do maior valor
           },
         },
       },
@@ -77,6 +85,12 @@ async function showRealTimeVPD() {
   try {
     const response = await fetch(realTimeUrl);
     const data = await response.json();
+
+    // Verificar se os dados de VPD são válidos
+    if (!data || typeof data.vpd === 'undefined') {
+      console.warn('Dados de VPD em tempo real não disponíveis.');
+      return;
+    }
 
     // Atualizar o valor no elemento HTML
     const vpdElement = document.getElementById('realTimeVPD');

@@ -8,10 +8,11 @@ body {
     justify-content: flex-start;
     background-color: #f9f9f9; /* Cor de fundo clara */
     min-height: 100vh;
-  }
-  
-  /* Estilo para o cabeçalho */
-  header {
+    overflow-x: hidden; /* Evita rolagem horizontal */
+}
+
+/* Estilo para o cabeçalho */
+header {
     width: 100%;
     background-color: #4CAF50; /* Verde */
     padding: 15px 0;
@@ -20,22 +21,31 @@ body {
     font-size: 1.8em;
     font-weight: bold;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  header h1 {
+}
+
+header h1 {
     margin: 0;
     font-size: 1.5em;
-  }
-  
-  /* Estilo para o canvas do gráfico */
-  canvas {
-    max-width: 90%;
-    height: auto;
-    margin: 20px 0;
-  }
-  
-  /* Contêiner principal para centralizar o conteúdo */
-  main {
+}
+
+/* Contêiner para o gráfico */
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px; /* Limita o tamanho máximo do gráfico */
+    height: 400px; /* Altura fixa para manter proporção */
+    margin: 20px auto; /* Centraliza na página */
+}
+
+/* Estilo para o canvas do gráfico */
+canvas {
+    max-width: 100%; /* Ajusta a largura ao container */
+    height: 100%; /* Adapta ao tamanho do container */
+    display: block;
+}
+
+/* Contêiner principal para centralizar o conteúdo */
+main {
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
@@ -43,47 +53,50 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 10px;
-  }
-  
-  /* Estilo para o valor do VPD em tempo real */
-  .current-vpd {
+}
+
+/* Estilo para o valor do VPD em tempo real */
+.current-vpd {
     font-size: 1.5em;
     color: #4CAF50; /* Verde para destacar */
     margin: 10px 0;
     text-align: center;
     font-weight: bold;
-  }
-  
-  /* Estilo responsivo */
-  @media (max-width: 768px) {
+}
+
+/* Estilo responsivo */
+@media (max-width: 768px) {
     header {
-      font-size: 1.4em;
+        font-size: 1.4em;
     }
-  
+
     header h1 {
-      font-size: 1.2em;
+        font-size: 1.2em;
     }
-  
-    canvas {
-      max-width: 100%;
+
+    .chart-container {
+        height: 300px; /* Reduz a altura do gráfico em dispositivos menores */
     }
-  
+
     .current-vpd {
-      font-size: 1.2em; /* Ajusta o tamanho para telas menores */
+        font-size: 1.2em; /* Ajusta o tamanho para telas menores */
     }
-  }
-  
-  @media (max-width: 480px) {
+}
+
+@media (max-width: 480px) {
     header {
-      font-size: 1.2em;
+        font-size: 1.2em;
     }
-  
+
     header h1 {
-      font-size: 1em;
+        font-size: 1em;
     }
-  
+
+    .chart-container {
+        height: 250px; /* Reduz ainda mais para dispositivos muito pequenos */
+    }
+
     .current-vpd {
-      font-size: 1em; /* Ajusta ainda mais o tamanho em dispositivos muito pequenos */
+        font-size: 1em; /* Ajusta ainda mais o tamanho em dispositivos muito pequenos */
     }
-  }
-  
+}
