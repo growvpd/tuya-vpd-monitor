@@ -24,6 +24,20 @@ async function createChart() {
     ); // Formata data e hora para 5 minutos
     const vpds = data.map((item) => item.avgVPD); // Valores médios de VPD
 
+    // Determinar a cor para cada ponto com base no valor do VPD
+    const pointColors = vpds.map((vpd) => {
+      if (vpd < 0.4 || vpd > 1.6) {
+        return 'red'; // Danger Zone
+      } else if (vpd >= 0.4 && vpd < 0.8) {
+        return 'green'; // Propagation / Early Veg Stage
+      } else if (vpd >= 0.8 && vpd < 1.2) {
+        return 'blue'; // Late Veg / Early Flower Stage
+      } else if (vpd >= 1.2 && vpd <= 1.6) {
+        return 'purple'; // Mid / Late Flower Stage
+      }
+      return 'gray'; // Valor padrão
+    });
+
     // Selecionar o canvas do gráfico
     const ctx = document.getElementById('vpdChart').getContext('2d');
 
@@ -32,7 +46,7 @@ async function createChart() {
       window.vpdChartInstance.destroy();
     }
 
-    // Criar o novo gráfico com faixas de cores
+    // Criar o novo gráfico com pontos coloridos
     window.vpdChartInstance = new Chart(ctx, {
       type: 'line', // Tipo do gráfico
       data: {
@@ -41,17 +55,20 @@ async function createChart() {
           {
             label: 'VPD Médio por 5 Minutos',
             data: vpds, // Valores médios de VPD
-            borderColor: 'rgba(75, 192, 192, 1)',
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)', // Linha principal
+            backgroundColor: 'rgba(75, 192, 192, 0.2)', // Fundo da área
             borderWidth: 2,
             fill: true,
             tension: 0.4, // Suaviza a linha
+            pointBackgroundColor: pointColors, // Cores dos pontos
+            pointBorderColor: pointColors, // Borda dos pontos
+            pointRadius: 5, // Tamanho dos pontos
           },
         ],
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true, // Manter proporção adequada
+        maintainAspectRatio: false, // Permitir ajuste automático de altura
         plugins: {
           title: {
             display: true,
@@ -59,50 +76,6 @@ async function createChart() {
           },
           legend: {
             display: true,
-          },
-          annotation: {
-            annotations: {
-              // Propagation / Early Veg Stage
-              greenZone: {
-                type: 'box',
-                xMin: 0, // O tempo é no eixo X, então deixamos a faixa global
-                xMax: labels.length - 1,
-                yMin: 0.4,
-                yMax: 0.8,
-                backgroundColor: 'rgba(0, 255, 0, 0.1)', // Verde claro
-                borderWidth: 0,
-              },
-              // Late Veg / Early Flower Stage
-              blueZone: {
-                type: 'box',
-                xMin: 0,
-                xMax: labels.length - 1,
-                yMin: 0.8,
-                yMax: 1.2,
-                backgroundColor: 'rgba(0, 0, 255, 0.1)', // Azul claro
-                borderWidth: 0,
-              },
-              // Mid / Late Flower Stage
-              purpleZone: {
-                type: 'box',
-                xMin: 0,
-                xMax: labels.length - 1,
-                yMin: 1.2,
-                yMax: 1.6,
-                backgroundColor: 'rgba(128, 0, 128, 0.1)', // Roxo claro
-                borderWidth: 0,
-              },
-              // Danger Zone (acima de 1.6)
-              redZone: {
-                type: 'box',
-                xMin: 0,
-                xMax: labels.length - 1,
-                yMin: 1.6,
-                yMax: Math.max(...vpds) + 0.1, // Extende até o máximo do gráfico
-                backgroundColor: 'rgba(255, 0, 0, 0.1)', // Vermelho claro
-                borderWidth: 0,
-              },
-            },
           },
         },
         scales: {
@@ -128,11 +101,6 @@ async function createChart() {
           },
         },
       },
-      plugins: [
-        {
-          id: 'annotation', // Adiciona plugin para as faixas
-        },
-      ],
     });
   } catch (error) {
     console.error('Erro ao buscar dados:', error);
