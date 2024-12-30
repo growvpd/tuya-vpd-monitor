@@ -16,12 +16,11 @@ async function createChart() {
     }
 
     // Processar os dados agregados
-    const labels = data.map(
-      (item) =>
-        `${item._id.day}/${item._id.month} ${item._id.hour}:${String(
-          item._id.minutes
-        ).padStart(2, '0')}`
-    ); // Formata data e hora para 5 minutos
+    const labels = data.map((item) => {
+      const timestamp = new Date(item._id.year, item._id.month - 1, item._id.day, item._id.hour, item._id.minutes);
+      return timestamp.toLocaleTimeString('pt-BR'); // Exibir hora, minutos e segundos no formato brasileiro
+    });
+
     const vpds = data.map((item) => item.avgVPD); // Valores médios de VPD
 
     // Determinar a cor para cada ponto com base no valor do VPD
@@ -107,6 +106,17 @@ async function createChart() {
         },
       },
     });
+
+    // Adicionar a legenda abaixo do gráfico
+    const legendContainer = document.getElementById('legendContainer');
+    legendContainer.innerHTML = `
+      <div style="text-align: center; margin-top: 10px;">
+        <span style="color: green; font-weight: bold;">● Propagation / Early Veg Stage (0.4 - 0.8 kPa)</span> |
+        <span style="color: blue; font-weight: bold;">● Late Veg / Early Flower Stage (0.8 - 1.2 kPa)</span> |
+        <span style="color: purple; font-weight: bold;">● Mid / Late Flower Stage (1.2 - 1.6 kPa)</span> |
+        <span style="color: red; font-weight: bold;">● Danger Zone (Abaixo de 0.4 ou Acima de 1.6 kPa)</span>
+      </div>
+    `;
   } catch (error) {
     console.error('Erro ao buscar dados:', error);
   }
