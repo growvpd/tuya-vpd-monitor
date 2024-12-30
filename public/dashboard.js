@@ -68,7 +68,7 @@ async function createChart() {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false, // Permitir ajuste automático de altura
+        maintainAspectRatio: false, // Ajuste automático da altura
         plugins: {
           title: {
             display: true,
