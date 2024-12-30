@@ -1,4 +1,4 @@
-// URL do backend para buscar o histórico
+// URL do backend para buscar o histórico e os dados em tempo real
 const apiUrl = 'https://tuya-vpd-monitor.onrender.com/vpd/history';
 const realTimeUrl = 'https://tuya-vpd-monitor.onrender.com/vpd'; // Para dados em tempo real
 
@@ -15,10 +15,10 @@ async function createChart() {
       return;
     }
 
-    // Processar os dados agregados
+    // Processar os dados agregados: converter timestamps para hora/minuto/segundo no formato brasileiro
     const labels = data.map((item) => {
       const timestamp = new Date(item._id.year, item._id.month - 1, item._id.day, item._id.hour, item._id.minutes);
-      return timestamp.toLocaleTimeString('pt-BR'); // Exibir hora, minutos e segundos no formato brasileiro
+      return timestamp.toLocaleTimeString('pt-BR'); // Exibir apenas o horário
     });
 
     const vpds = data.map((item) => item.avgVPD); // Valores médios de VPD
@@ -54,12 +54,12 @@ async function createChart() {
     window.vpdChartInstance = new Chart(ctx, {
       type: 'line', // Tipo do gráfico
       data: {
-        labels: labels, // Eixo X: tempo agrupado por 5 minutos
+        labels: labels, // Eixo X: tempo agrupado
         datasets: [
           {
             label: 'VPD Médio por 5 Minutos',
             data: vpds, // Valores médios de VPD
-            borderColor: 'rgba(75, 192, 192, 1)', // Linha principal
+            borderColor: 'rgba(75, 192, 192, 1)', // Cor da linha
             backgroundColor: 'rgba(75, 192, 192, 0.2)', // Fundo da área
             borderWidth: 2,
             fill: true,
@@ -95,7 +95,7 @@ async function createChart() {
               text: 'VPD (kPa)',
             },
             min: 0,
-            max: Math.max(...vpds) + 0.2, // Ajusta para acomodar faixas
+            max: Math.max(...vpds) + 0.2, // Ajusta para acomodar os valores
           },
         },
         layout: {
@@ -133,19 +133,15 @@ async function showRealTimeVPD() {
 
     // Alterar o texto e cor baseado no valor do VPD
     if (vpdValue < 0.4 || vpdValue > 1.6) {
-      // Danger Zone
       vpdElement.style.color = 'red';
       vpdElement.innerHTML = `VPD Atual: ${vpdValue} kPa (Danger Zone)`;
     } else if (vpdValue >= 0.4 && vpdValue < 0.8) {
-      // Propagation / Early Veg Stage
       vpdElement.style.color = 'green';
       vpdElement.innerHTML = `VPD Atual: ${vpdValue} kPa (Propagation / Early Veg Stage)`;
     } else if (vpdValue >= 0.8 && vpdValue < 1.2) {
-      // Late Veg / Early Flower Stage
       vpdElement.style.color = 'blue';
       vpdElement.innerHTML = `VPD Atual: ${vpdValue} kPa (Late Veg / Early Flower Stage)`;
     } else if (vpdValue >= 1.2 && vpdValue <= 1.6) {
-      // Mid / Late Flower Stage
       vpdElement.style.color = 'purple';
       vpdElement.innerHTML = `VPD Atual: ${vpdValue} kPa (Mid / Late Flower Stage)`;
     }
@@ -158,6 +154,6 @@ async function showRealTimeVPD() {
 createChart();
 showRealTimeVPD();
 
-// Atualiza o gráfico a cada 5 minutos e o VPD em tempo real a cada 15 segundos
+// Atualizar o gráfico e o VPD em tempo real periodicamente
 setInterval(createChart, 300000); // Atualiza o gráfico a cada 5 minutos (300000ms)
 setInterval(showRealTimeVPD, 15000); // Atualiza o VPD em tempo real a cada 15 segundos

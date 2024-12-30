@@ -36,14 +36,13 @@ header h1 {
     margin: 20px auto;
     overflow: hidden; /* Prevenir crescimento */
     position: relative; /* Para evitar que elementos extrapolem o contêiner */
-  }
+}
 
 /* Estilo para o canvas do gráfico */
 canvas {
     max-width: 100%; /* Ajusta a largura ao container */
     height: 100%; /* Adapta ao tamanho do container */
     display: block;
-    height: 400px; /* Ajuste conforme necessário *
 }
 
 /* Contêiner principal para centralizar o conteúdo */
@@ -56,7 +55,7 @@ main {
     align-items: center;
     padding: 10px;
     overflow: hidden; /* Impede o scroll contínuo */
-}}
+}
 
 /* Estilo para o valor do VPD em tempo real */
 .current-vpd {
@@ -65,6 +64,43 @@ main {
     margin: 10px 0;
     text-align: center;
     font-weight: bold;
+}
+
+/* Contêiner para a legenda */
+.legend-container {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #555;
+}
+
+.legend-container span {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+.legend-container .point {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+    border-radius: 50%;
+}
+
+.point.green {
+    background-color: green;
+}
+
+.point.blue {
+    background-color: blue;
+}
+
+.point.purple {
+    background-color: purple;
+}
+
+.point.red {
+    background-color: red;
 }
 
 /* Estilo responsivo */
@@ -84,6 +120,10 @@ main {
     .current-vpd {
         font-size: 1.2em; /* Ajusta o tamanho para telas menores */
     }
+
+    .legend-container {
+        font-size: 12px; /* Ajusta o tamanho da legenda */
+    }
 }
 
 @media (max-width: 480px) {
@@ -101,5 +141,9 @@ main {
 
     .current-vpd {
         font-size: 1em; /* Ajusta ainda mais o tamanho em dispositivos muito pequenos */
+    }
+
+    .legend-container {
+        font-size: 10px; /* Ajusta ainda mais o tamanho da legenda */
     }
 }

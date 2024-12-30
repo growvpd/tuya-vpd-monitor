@@ -1,25 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0"></script>
-  <div id="legendContainer"></div>
-  <meta charset="UTF-3">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monitor de VPD</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
     <h1>Monitor de VPD</h1>
   </header>
   <main>
-    <canvas id="vpdChart"></canvas>
+    <!-- Gráfico -->
+    <div class="chart-container">
+      <canvas id="vpdChart"></canvas>
+    </div>
+    <!-- Exibir o VPD Atual -->
     <div class="current-vpd" id="realTimeVPD">Carregando VPD...</div>
+    <!-- Contêiner da legenda -->
+    <div id="legendContainer" class="legend-container"></div>
   </main>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="dashboard.js"></script>
 </body>
-<div class="chart-container">
-  <canvas id="vpdChart"></canvas>
-</div>
 </html>
