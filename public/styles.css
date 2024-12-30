@@ -147,3 +147,33 @@ main {
         font-size: 10px; /* Ajusta ainda mais o tamanho da legenda */
     }
 }
+
+/* Estilo para o contêiner de métricas */
+.metrics-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 20px;
+    padding: 20px;
+    background-color: #4CAF50; /* Verde similar ao exemplo */
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    color: white;
+  }
+  
+  /* Estilo para cada métrica individual */
+  .metric {
+    text-align: center;
+  }
+  
+  .metric-value {
+    font-size: 2.5em;
+    font-weight: bold;
+    display: block;
+  }
+  
+  .metric-label {
+    font-size: 1.2em;
+    margin-top: 5px;
+  }
+  
