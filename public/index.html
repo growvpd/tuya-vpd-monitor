@@ -3,23 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monitor de VPD</title>
+  <title>Monitor de Cultivo</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
-    <h1>Monitor de VPD</h1>
+    <h1>Monitor de Cultivo</h1>
   </header>
   <main>
-    <!-- Gráfico -->
-    <div class="chart-container">
-      <canvas id="vpdChart"></canvas>
+    <!-- Contêiner de métricas -->
+    <div class="metrics-container">
+      <div class="metric">
+        <span class="metric-value" id="currentTemperature">--</span>
+        <span class="metric-label">Temperatura (°C)</span>
+      </div>
+      <div class="metric">
+        <span class="metric-value" id="currentHumidity">--</span>
+        <span class="metric-label">Umidade (%)</span>
+      </div>
+      <div class="metric">
+        <span class="metric-value" id="currentVPD">--</span>
+        <span class="metric-label">VPD (kPa)</span>
+      </div>
     </div>
-    <!-- Exibir o VPD Atual -->
-    <div class="current-vpd" id="realTimeVPD">Carregando VPD...</div>
-    <!-- Contêiner da legenda -->
-    <div id="legendContainer" class="legend-container"></div>
   </main>
   <script src="dashboard.js"></script>
 </body>
