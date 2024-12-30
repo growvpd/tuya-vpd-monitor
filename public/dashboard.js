@@ -158,9 +158,6 @@ showRealTimeVPD();
 setInterval(createChart, 300000); // Atualiza o gráfico a cada 5 minutos (300000ms)
 setInterval(showRealTimeVPD, 15000); // Atualiza o VPD em tempo real a cada 15 segundos
 
-// URLs do backend
-const realTimeUrl = 'https://tuya-vpd-monitor.onrender.com/vpd'; // Endpoint para dados em tempo real
-
 // Função para atualizar os valores de temperatura, umidade e VPD
 async function updateMetrics() {
   try {
