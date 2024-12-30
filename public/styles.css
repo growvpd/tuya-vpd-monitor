@@ -176,4 +176,25 @@ main {
     font-size: 1.2em;
     margin-top: 5px;
   }
+  /* Contêiner do botão */
+.button-container {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  /* Estilo do botão */
+  .button-container button {
+    padding: 10px 20px;
+    font-size: 1em;
+    background-color: #4CAF50; /* Verde */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .button-container button:hover {
+    background-color: #45a049; /* Tom mais escuro ao passar o mouse */
+  }
   
