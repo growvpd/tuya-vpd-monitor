@@ -55,6 +55,7 @@ main {
     flex-direction: column;
     align-items: center;
     padding: 10px;
+    overflow: hidden; /* Impede o scroll contínuo */
 }}
 
 /* Estilo para o valor do VPD em tempo real */

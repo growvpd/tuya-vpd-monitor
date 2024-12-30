@@ -39,7 +39,12 @@ async function createChart() {
     });
 
     // Selecionar o canvas do gráfico
-    const ctx = document.getElementById('vpdChart').getContext('2d');
+    const canvas = document.getElementById('vpdChart');
+    const ctx = canvas.getContext('2d');
+
+    // Configurar tamanho fixo para o canvas para evitar crescimento infinito
+    canvas.style.height = '400px';
+    canvas.style.maxHeight = '400px';
 
     // Verifica se já existe um gráfico, destrói para recriar
     if (window.vpdChartInstance) {
@@ -68,7 +73,7 @@ async function createChart() {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false, // Ajuste automático da altura
+        maintainAspectRatio: false, // Evita problemas de proporção
         plugins: {
           title: {
             display: true,
