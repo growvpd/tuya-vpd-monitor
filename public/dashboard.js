@@ -51,7 +51,7 @@ async function createChart(canvasId, label, yAxisLabel, dataKey, maxAdjustment, 
             data: chartData,
             borderColor: 'rgba(75, 192, 192, 1)',
             backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderWidth: 2,
+            borderWidth: 0,
             fill: true,
             tension: 0.4,
             pointRadius: 5,
@@ -68,15 +68,10 @@ async function createChart(canvasId, label, yAxisLabel, dataKey, maxAdjustment, 
             // Adicionar cores aos pontos de temperatura
             ...(canvasId === 'temperatureChart' && {
               pointBackgroundColor: chartData.map((value) => {
-                if (value >= 10 && value <= 28) {
-                  const greenIntensity = Math.round(((value - 10) / 18) * 255); // Escala de verde de 10 a 28
-                  return `rgb(0, ${greenIntensity}, 0)`; // Verde crescente
-                } else if (value > 28) {
-                  return 'red'; // Vermelho para valores acima de 28
-                } else {
-                  const blueIntensity = Math.round((value / 10) * 255); // Escala de azul de 0 a 10
-                  return `rgb(${255 - blueIntensity}, 0, ${blueIntensity})`; // Azul decrescente até vermelho
-                }
+                if (value < 18 || value > 29) return 'red';
+                if (value >= 24 && value < 28) return 'green';
+                if (value >= 18 && value <= 24) return 'purple';
+                return 'gray';
               }),
             }),
                 // Adicionar cores aos pontos de umidade

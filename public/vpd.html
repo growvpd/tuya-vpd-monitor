@@ -27,22 +27,25 @@
     </div>
         <!-- Exibir o Temperatura Atual -->
         <div class="current-vpd" id="currentTemperature">Carregando Temperatura...</div>
-        <!-- Leganda do grafico de Temperatura -->
-        <div style="text-align: center; margin-top: 10px;">
-          <span style="color: green; font-weight: bold;">● Faixa de temperatura boa (10 ~ 28 °C)</span> |
-          <span style="color: red; font-weight: bold;">● Faixa de temperatura ruim (Abaixo de 10 ou Acima de 28 °C)</span>
-    </div>
+    <!-- Leganda do grafico de VPD -->
+    <div style="text-align: center; margin-top: 10px;">
+      <span style="color: green; font-weight: bold;">● Propagation / Early Veg Stage (22° ~ 26° Celcius)</span> |
+      <span style="color: blue; font-weight: bold;">● Late Veg / Early Flower Stage (22° - 28° Celcius)</span> |
+      <span style="color: purple; font-weight: bold;">● Mid / Late Flower Stage (20 - 26° Celcius)</span> |
+      <span style="color: red; font-weight: bold;">● Danger Zone (Abaixo de 18° ou Acima de 28° Celcius)</span>
+  </div>
     <div class="chart-container">
       <canvas id="temperatureChart"></canvas>
     </div>
-            <!-- Exibir o Umidade Atual -->
-            <div class="current-vpd" id="currentHumidity">Carregando Umidade...</div>
-            <!-- Leganda do grafico de Humidade -->
-            <div style="text-align: center; margin-top: 10px;">
-              <span style="color: green; font-weight: bold;">● Faixa de umidade vegetação (60 ~ 70 %)</span> |
-              <span style="color: purple; font-weight: bold;">● Faixa de umidade floração (40 ~50 %)</span> |
-              <span style="color: red; font-weight: bold;">● Faixa de temperatura ruim (Abaixo de 40 ou Acima de 70%)</span>
-        </div>
+      <!-- Exibir o Umidade Atual -->
+      <div class="current-vpd" id="currentHumidity">Carregando Umidade...</div>
+      <!-- Leganda do grafico de VPD -->
+      <div style="text-align: center; margin-top: 10px;">
+      <span style="color: green; font-weight: bold;">● Propagation / Early Veg Stage (70% ~ 80% de Umidade)</span> |
+      <span style="color: blue; font-weight: bold;">● Late Veg / Early Flower Stage (60% - 70% de Umidade)</span> |
+      <span style="color: purple; font-weight: bold;">● Mid / Late Flower Stage (35% - 50% de Umidade)</span> |
+      <span style="color: red; font-weight: bold;">● Danger Zone (Abaixo de 35% ou Acima de 80% de Umidade)</span>
+  </div>
     <div class="chart-container">
       <canvas id="humidityChart"></canvas>
     </div>
