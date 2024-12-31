@@ -135,19 +135,20 @@ async function createChart() {
     console.error('Erro ao buscar dados:', error);
   }
 }
-
-
-// Função para criar o gráfico de Temperatura
-async function createTemperatureChart() {
+// Função para criar o gráfico Temperatura
+async function createChart() {
   try {
+    // Buscar dados do histórico no backend
     const response = await fetch(apiUrl);
     const data = await response.json();
 
+    // Verificar se há dados retornados
     if (!data || data.length === 0) {
-      console.warn('Nenhum dado disponível para o gráfico de Temperatura.');
+      console.warn('Nenhum dado disponível para o gráfico.');
       return;
     }
 
+    // Processar os dados agregados: ajustar o horário para UTC-3
     const labels = data.map((item) => {
       const timestamp = new Date(
         item._id.year,
@@ -156,45 +157,72 @@ async function createTemperatureChart() {
         item._id.hour,
         item._id.minutes
       );
-      const localTime = new Date(timestamp.getTime() - 3 * 60 * 60 * 1000); // Ajustar para UTC-3
-      return localTime.toLocaleTimeString('pt-BR');
+
+      // Ajustar o horário para UTC-3 (São Paulo)
+      const localTime = new Date(timestamp.getTime() - 3 * 60 * 60 * 1000);
+
+      return localTime.toLocaleTimeString('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      }); // Exibir apenas hora:minutos:segundos no formato brasileiro
     });
 
-    const temperatures = data.map((item) => item.avgTemperature);
+    const temps = data.map((item) => item.avgTemperature); // Valores médios de VPD
 
+    // Determinar a cor para cada ponto com base no valor do VPD
+    const pointColors = temps.map((tmp) => {
+      if (tmp < 10 || tmp >= 30) {
+        return 'red'; // Danger Zone
+      } else if (tmp >= 10 && tmp < 30) {
+        return 'green'; // Propagation / Early Veg Stage
+      } else if (tmp >= 0.8 && tmp < 1.2) {
+      return 'gray'; // Valor padrão
+    });
+
+    // Selecionar o canvas do gráfico
     const canvas = document.getElementById('temperatureChart');
     const ctx = canvas.getContext('2d');
-    canvas.style.height = '400px';
-    canvas.style.width = '100%';
 
+    // Configurar tamanho fixo para o canvas para evitar crescimento infinito
+    canvas.style.height = '400px';
+    canvas.style.maxHeight = '400px';
+
+    // Verifica se já existe um gráfico, destrói para recriar
     if (window.temperatureChartInstance) {
       window.temperatureChartInstance.destroy();
     }
 
+    // Criar o novo gráfico com pontos coloridos
     window.temperatureChartInstance = new Chart(ctx, {
-      type: 'line',
+      type: 'line', // Tipo do gráfico
       data: {
-        labels: labels,
+        labels: labels, // Eixo X: tempo ajustado para UTC-3
         datasets: [
           {
-            label: 'Temperatura Média por 5 Minutos',
-            data: temperatures,
-            borderColor: 'rgba(255, 99, 132, 1)',
-            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            label: 'Temperatura méida a cada 5 minutos',
+            data: tmps, // Valores médios de Temperatura
+            borderColor: 'rgba(75, 192, 192, 1)', // Cor da linha
+            backgroundColor: 'rgba(75, 192, 192, 0.2)', // Fundo da área
             borderWidth: 2,
             fill: true,
-            tension: 0.4,
-            pointRadius: 5,
+            tension: 0.4, // Suaviza a linha
+            pointBackgroundColor: pointColors, // Cores dos pontos
+            pointBorderColor: pointColors, // Borda dos pontos
+            pointRadius: 5, // Tamanho dos pontos
           },
         ],
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: false, // Evita problemas de proporção
         plugins: {
           title: {
             display: true,
-            text: 'Gráfico de Temperatura Média (Agregado por 5 Minutos)',
+            text: 'Gráfico de Temperatura Médio (Agregado por 5 Minutos)',
+          },
+          legend: {
+            display: true,
           },
         },
         scales: {
@@ -209,95 +237,18 @@ async function createTemperatureChart() {
               display: true,
               text: 'Temperatura (°C)',
             },
+            min: 0,
+            max: Math.max(...tmps) + 5, // Ajusta para acomodar os valores
+          },
+        },
+        layout: {
+          padding: {
+            top: 10,
+            bottom: 10,
           },
         },
       },
     });
-  } catch (error) {
-    console.error('Erro ao buscar dados para o gráfico de Temperatura:', error);
-  }
-}
-
-// Função para criar o gráfico de Umidade
-async function createHumidityChart() {
-  try {
-    const response = await fetch(apiUrl);
-    const data = await response.json();
-
-    if (!data || data.length === 0) {
-      console.warn('Nenhum dado disponível para o gráfico de Umidade.');
-      return;
-    }
-
-    const labels = data.map((item) => {
-      const timestamp = new Date(
-        item._id.year,
-        item._id.month - 1,
-        item._id.day,
-        item._id.hour,
-        item._id.minutes
-      );
-      const localTime = new Date(timestamp.getTime() - 3 * 60 * 60 * 1000); // Ajustar para UTC-3
-      return localTime.toLocaleTimeString('pt-BR');
-    });
-
-    const humidities = data.map((item) => item.avgHumidity);
-
-    const canvas = document.getElementById('humidityChart');
-    const ctx = canvas.getContext('2d');
-    canvas.style.height = '400px';
-    canvas.style.width = '100%';
-
-    if (window.humidityChartInstance) {
-      window.humidityChartInstance.destroy();
-    }
-
-    window.humidityChartInstance = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: 'Umidade Média por 5 Minutos',
-            data: humidities,
-            borderColor: 'rgba(54, 162, 235, 1)',
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderWidth: 2,
-            fill: true,
-            tension: 0.4,
-            pointRadius: 5,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          title: {
-            display: true,
-            text: 'Gráfico de Umidade Média (Agregado por 5 Minutos)',
-          },
-        },
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: 'Tempo',
-            },
-          },
-          y: {
-            title: {
-              display: true,
-              text: 'Umidade (%)',
-            },
-          },
-        },
-      },
-    });
-  } catch (error) {
-    console.error('Erro ao buscar dados para o gráfico de Umidade:', error);
-  }
-}
 
 // Função para exibir o VPD em tempo real
 async function showRealTimeVPD() {
