@@ -77,6 +77,15 @@ async function createChart(canvasId, label, yAxisLabel, dataKey, maxAdjustment, 
                   const blueIntensity = Math.round((value / 10) * 255); // Escala de azul de 0 a 10
                   return `rgb(${255 - blueIntensity}, 0, ${blueIntensity})`; // Azul decrescente até vermelho
                 }
+              }),
+            }),
+                // Adicionar cores aos pontos de umidade
+            ...(canvasId === 'humidityChart' && {
+              pointBackgroundColor: chartData.map((value) => {
+                if (value < 35 || value > 80) return 'red';
+                if (value >= 35 && value < 51) return 'purple';
+                if (value >= 51 && value < 71) return 'blue';
+                if (value >= 71 && value <= 80) return 'green';
           }),
           }),
         }
