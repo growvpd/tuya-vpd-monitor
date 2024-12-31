@@ -105,19 +105,6 @@ async function createChart(canvasId, label, yAxisLabel, dataKey, maxAdjustment, 
 
     // Criar o novo gráfico
     window[`${canvasId}Instance`] = new Chart(ctx, chartOptions);
-
-    // Adicionar legenda personalizada para o gráfico de VPD
-    if (canvasId === 'vpdChart') {
-      const legendContainer = document.getElementById('legendContainer');
-      legendContainer.innerHTML = `
-        <div style="text-align: center; margin-top: 10px;">
-          <span style="color: green; font-weight: bold;">● Propagation / Early Veg Stage (0.4 - 0.8 kPa)</span> |
-          <span style="color: blue; font-weight: bold;">● Late Veg / Early Flower Stage (0.8 - 1.2 kPa)</span> |
-          <span style="color: purple; font-weight: bold;">● Mid / Late Flower Stage (1.2 - 1.6 kPa)</span> |
-          <span style="color: red; font-weight: bold;">● Danger Zone (Abaixo de 0.4 ou Acima de 1.6 kPa)</span>
-        </div>
-      `;
-    }
   } catch (error) {
     console.error(`Erro ao buscar dados para o gráfico de ${label}:`, error);
   }

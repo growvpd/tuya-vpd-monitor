@@ -14,6 +14,13 @@
   <main>
     <!-- Exibir o VPD Atual -->
     <div class="current-vpd" id="realTimeVPD">Carregando VPD...</div>
+    <!-- Leganda do grafico de VPD -->
+    <div style="text-align: center; margin-top: 10px;">
+        <span style="color: green; font-weight: bold;">● Propagation / Early Veg Stage (0.4 - 0.8 kPa)</span> |
+        <span style="color: blue; font-weight: bold;">● Late Veg / Early Flower Stage (0.8 - 1.2 kPa)</span> |
+        <span style="color: purple; font-weight: bold;">● Mid / Late Flower Stage (1.2 - 1.6 kPa)</span> |
+        <span style="color: red; font-weight: bold;">● Danger Zone (Abaixo de 0.4 ou Acima de 1.6 kPa)</span>
+    </div>
     <!-- Gráfico VPD -->
     <div class="chart-container">
       <canvas id="vpdChart"></canvas>
@@ -21,11 +28,14 @@
     <div class="chart-container">
       <canvas id="temperatureChart"></canvas>
     </div>
+    <!-- Leganda do grafico de Temperatura -->
+    <div style="text-align: center; margin-top: 10px;">
+        <span style="color: green; font-weight: bold;">● Faixa de temperatura boa (10 ~ 28 °C)</span> |
+        <span style="color: red; font-weight: bold;">● Faixa de temperatura boa (Abaixo de 10 ou Acima de 28 °C)</span>
+    </div>
     <div class="chart-container">
       <canvas id="humidityChart"></canvas>
     </div>
-    <!-- Contêiner da legenda -->
-    <div id="legendContainer" class="legend-container"></div>
     <!-- Botão para voltar -->
     <div class="back-button-container">
       <button onclick="window.location.href='index.html'">Voltar</button>
