@@ -10,11 +10,18 @@
   <header>
     <h1>Monitor de VPD</h1>
   </header>
-  <main>
-    <!-- Contêiner do gráfico -->
-    <div class="chart-container">
+    <main>
+      <!-- Gráfico de VPD -->
       <canvas id="vpdChart"></canvas>
-    </div>
+    
+      <!-- Gráfico de Temperatura -->
+      <canvas id="tempChart"></canvas>
+    
+      <!-- Gráfico de Umidade -->
+      <canvas id="humidityChart"></canvas>
+    
+      <div class="current-vpd" id="realTimeVPD">Carregando VPD...</div>
+
 
     <!-- Contêiner do valor de VPD em tempo real -->
     <div class="current-vpd" id="realTimeVPD">Carregando VPD...</div>
