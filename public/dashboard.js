@@ -2,8 +2,8 @@
 const apiUrl = 'https://tuya-vpd-monitor.onrender.com/vpd/history';
 const realTimeUrl = 'https://tuya-vpd-monitor.onrender.com/vpd'; // Para dados em tempo real
 
-// Função para criar os gráficos
-async function createCharts() {
+// Função para criar o gráfico
+async function createChart() {
   try {
     // Buscar dados do histórico no backend
     const response = await fetch(apiUrl);
@@ -11,36 +11,20 @@ async function createCharts() {
 
     // Verificar se há dados retornados
     if (!data || data.length === 0) {
-      console.warn('Nenhum dado disponível para os gráficos.');
+      console.warn('Nenhum dado disponível para o gráfico.');
       return;
     }
 
-    // Processar os dados agregados: ajustar o horário para UTC-3
+    // Processar os dados agregados: converter timestamps para hora/minuto/segundo no formato brasileiro
     const labels = data.map((item) => {
-      const timestamp = new Date(
-        item._id.year,
-        item._id.month - 1,
-        item._id.day,
-        item._id.hour,
-        item._id.minutes
-      );
-
-      // Ajustar o horário para UTC-3 (São Paulo)
-      const localTime = new Date(timestamp.getTime() - 3 * 60 * 60 * 1000);
-
-      return localTime.toLocaleTimeString('pt-BR', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      }); // Exibir apenas hora:minutos:segundos no formato brasileiro
+      const timestamp = new Date(item._id.year, item._id.month - 1, item._id.day, item._id.hour, item._id.minutes);
+      return timestamp.toLocaleTimeString('pt-BR'); // Exibir apenas o horário
     });
 
     const vpds = data.map((item) => item.avgVPD); // Valores médios de VPD
-    const temperatures = data.map((item) => item.avgTemperature); // Valores médios de temperatura
-    const humidities = data.map((item) => item.avgHumidity); // Valores médios de umidade
 
     // Determinar a cor para cada ponto com base no valor do VPD
-    const pointColorsVPD = vpds.map((vpd) => {
+    const pointColors = vpds.map((vpd) => {
       if (vpd < 0.4 || vpd > 1.6) {
         return 'red'; // Danger Zone
       } else if (vpd >= 0.4 && vpd < 0.8) {
@@ -53,92 +37,86 @@ async function createCharts() {
       return 'gray'; // Valor padrão
     });
 
-    // Configurar os gráficos
-    const createGraph = (ctx, label, data, color, title) => {
-      return new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: label,
-              data: data,
-              borderColor: color,
-              backgroundColor: `${color}33`, // Fundo semitransparente
-              borderWidth: 2,
-              fill: true,
-              tension: 0.4,
-            },
-          ],
+    // Selecionar o canvas do gráfico
+    const canvas = document.getElementById('vpdChart');
+    const ctx = canvas.getContext('2d');
+
+    // Configurar tamanho fixo para o canvas para evitar crescimento infinito
+    canvas.style.height = '400px';
+    canvas.style.maxHeight = '400px';
+
+    // Verifica se já existe um gráfico, destrói para recriar
+    if (window.vpdChartInstance) {
+      window.vpdChartInstance.destroy();
+    }
+
+    // Criar o novo gráfico com pontos coloridos
+    window.vpdChartInstance = new Chart(ctx, {
+      type: 'line', // Tipo do gráfico
+      data: {
+        labels: labels, // Eixo X: tempo agrupado
+        datasets: [
+          {
+            label: 'VPD Médio por 5 Minutos',
+            data: vpds, // Valores médios de VPD
+            borderColor: 'rgba(75, 192, 192, 1)', // Cor da linha
+            backgroundColor: 'rgba(75, 192, 192, 0.2)', // Fundo da área
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4, // Suaviza a linha
+            pointBackgroundColor: pointColors, // Cores dos pontos
+            pointBorderColor: pointColors, // Borda dos pontos
+            pointRadius: 5, // Tamanho dos pontos
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false, // Evita problemas de proporção
+        plugins: {
+          title: {
+            display: true,
+            text: 'Gráfico de VPD Médio (Agregado por 5 Minutos)',
+          },
+          legend: {
+            display: true,
+          },
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
+        scales: {
+          x: {
             title: {
               display: true,
-              text: title,
+              text: 'Tempo',
             },
-            legend: {
+          },
+          y: {
+            title: {
               display: true,
+              text: 'VPD (kPa)',
             },
-          },
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: 'Tempo',
-              },
-            },
-            y: {
-              title: {
-                display: true,
-                text: label,
-              },
-            },
-          },
-          layout: {
-            padding: {
-              top: 10,
-              bottom: 10,
-            },
+            min: 0,
+            max: Math.max(...vpds) + 0.2, // Ajusta para acomodar os valores
           },
         },
-      });
-    };
+        layout: {
+          padding: {
+            top: 10,
+            bottom: 10,
+          },
+        },
+      },
+    });
 
-    // Selecionar os canvas
-    const vpdCanvas = document.getElementById('vpdChart').getContext('2d');
-    const tempCanvas = document.getElementById('tempChart').getContext('2d');
-    const humidityCanvas = document.getElementById('humidityChart').getContext('2d');
-
-    // Destruir gráficos existentes (se houver)
-    if (window.vpdChartInstance) window.vpdChartInstance.destroy();
-    if (window.tempChartInstance) window.tempChartInstance.destroy();
-    if (window.humidityChartInstance) window.humidityChartInstance.destroy();
-
-    // Criar novos gráficos
-    window.vpdChartInstance = createGraph(
-      vpdCanvas,
-      'VPD (kPa)',
-      vpds,
-      'rgba(75, 192, 192, 1)',
-      'Gráfico de VPD Médio (Agregado por 5 Minutos)'
-    );
-    window.tempChartInstance = createGraph(
-      tempCanvas,
-      'Temperatura (°C)',
-      temperatures,
-      'rgba(255, 99, 132, 1)',
-      'Gráfico de Temperatura (°C)'
-    );
-    window.humidityChartInstance = createGraph(
-      humidityCanvas,
-      'Umidade (%)',
-      humidities,
-      'rgba(54, 162, 235, 1)',
-      'Gráfico de Umidade (%)'
-    );
+    // Adicionar a legenda abaixo do gráfico
+    const legendContainer = document.getElementById('legendContainer');
+    legendContainer.innerHTML = `
+      <div style="text-align: center; margin-top: 10px;">
+        <span style="color: green; font-weight: bold;">● Propagation / Early Veg Stage (0.4 - 0.8 kPa)</span> |
+        <span style="color: blue; font-weight: bold;">● Late Veg / Early Flower Stage (0.8 - 1.2 kPa)</span> |
+        <span style="color: purple; font-weight: bold;">● Mid / Late Flower Stage (1.2 - 1.6 kPa)</span> |
+        <span style="color: red; font-weight: bold;">● Danger Zone (Abaixo de 0.4 ou Acima de 1.6 kPa)</span>
+      </div>
+    `;
   } catch (error) {
     console.error('Erro ao buscar dados:', error);
   }
@@ -172,10 +150,30 @@ async function showRealTimeVPD() {
   }
 }
 
-// Chamar as funções para criar os gráficos e mostrar o VPD em tempo real
-createCharts();
+// Chamar as funções para criar o gráfico e mostrar o VPD em tempo real
+createChart();
 showRealTimeVPD();
 
-// Atualizar os gráficos e o VPD em tempo real periodicamente
-setInterval(createCharts, 300000); // Atualiza os gráficos a cada 5 minutos (300000ms)
+// Atualizar o gráfico e o VPD em tempo real periodicamente
+setInterval(createChart, 300000); // Atualiza o gráfico a cada 5 minutos (300000ms)
 setInterval(showRealTimeVPD, 15000); // Atualiza o VPD em tempo real a cada 15 segundos
+
+// Função para atualizar os valores de temperatura, umidade e VPD
+async function updateMetrics() {
+  try {
+    // Fetch dos dados em tempo real
+    const response = await fetch(realTimeUrl);
+    const data = await response.json();
+
+    // Atualizar os valores na interface
+    document.getElementById('currentTemperature').innerText = `${data.temperature} °C`;
+    document.getElementById('currentHumidity').innerText = `${data.humidity} %`;
+    document.getElementById('currentVPD').innerText = `${parseFloat(data.vpd).toFixed(2)} kPa`;
+  } catch (error) {
+    console.error('Erro ao buscar dados em tempo real:', error);
+  }
+}
+
+// Atualizar as métricas a cada 15 segundos
+updateMetrics();
+setInterval(updateMetrics, 15000);
