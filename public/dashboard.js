@@ -163,5 +163,21 @@ setInterval(() => {
   createChart('humidityChart', 'Umidade', 'Umidade (%)', 'avgHumidity', 10);
 }, 300000);
 
+// Função para atualizar os valores de temperatura, umidade e VPD
+async function updateMetrics() {
+  try {
+    // Fetch dos dados em tempo real
+    const response = await fetch(realTimeUrl);
+    const data = await response.json();
+
+    // Atualizar os valores na interface
+    document.getElementById('currentTemperature').innerText = `${data.temperature} °C`;
+    document.getElementById('currentHumidity').innerText = `${data.humidity} %`;
+    document.getElementById('currentVPD').innerText = `${parseFloat(data.vpd).toFixed(2)} kPa`;
+  } catch (error) {
+    console.error('Erro ao buscar dados em tempo real:', error);
+  }
+}
+
 showRealTimeVPD();
 setInterval(showRealTimeVPD, 15000);
