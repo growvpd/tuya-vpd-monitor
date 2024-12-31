@@ -15,10 +15,24 @@ async function createChart() {
       return;
     }
 
-    // Processar os dados agregados: converter timestamps para hora/minuto/segundo no formato brasileiro
+    // Processar os dados agregados: ajustar o horário para UTC-3
     const labels = data.map((item) => {
-      const timestamp = new Date(item._id.year, item._id.month - 1, item._id.day, item._id.hour, item._id.minutes);
-      return timestamp.toLocaleTimeString('pt-BR'); // Exibir apenas o horário
+      const timestamp = new Date(
+        item._id.year,
+        item._id.month - 1,
+        item._id.day,
+        item._id.hour,
+        item._id.minutes
+      );
+
+      // Ajustar o horário para UTC-3 (São Paulo)
+      const localTime = new Date(timestamp.getTime() - 3 * 60 * 60 * 1000);
+
+      return localTime.toLocaleTimeString('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      }); // Exibir apenas hora:minutos:segundos no formato brasileiro
     });
 
     const vpds = data.map((item) => item.avgVPD); // Valores médios de VPD
@@ -54,7 +68,7 @@ async function createChart() {
     window.vpdChartInstance = new Chart(ctx, {
       type: 'line', // Tipo do gráfico
       data: {
-        labels: labels, // Eixo X: tempo agrupado
+        labels: labels, // Eixo X: tempo ajustado para UTC-3
         datasets: [
           {
             label: 'VPD Médio por 5 Minutos',
