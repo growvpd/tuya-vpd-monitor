@@ -68,8 +68,8 @@ async function createChart(canvasId, label, yAxisLabel, dataKey, maxAdjustment, 
             // Adicionar cores aos pontos de temperatura
             ...(canvasId === 'temperatureChart' && {
               pointBackgroundColor: chartData.map((value) => {
-                if (value < 18 || value > 29) return 'red';
-                if (value >= 24 && value < 28) return 'green';
+                if (value < 18 || value >= 29) return 'red';
+                if (value >= 24 && value < 29) return 'green';
                 if (value >= 18 && value <= 24) return 'purple';
                 return 'gray';
               }),
