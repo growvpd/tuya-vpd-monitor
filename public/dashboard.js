@@ -105,6 +105,20 @@ async function createVPDChart() {
     'rgba(75, 192, 192, 0.2)',
     'VPD (kPa)'
   );
+      // Alterar o texto e cor baseado no valor do VPD
+      if (vpdValue < 0.4 || vpdValue > 1.6) {
+        vpdElement.style.color = 'red';
+        vpdElement.innerHTML = `VPD Atual: ${vpdValue} kPa (Danger Zone)`;
+      } else if (vpdValue >= 0.4 && vpdValue < 0.8) {
+        vpdElement.style.color = 'green';
+        vpdElement.innerHTML = `VPD Atual: ${vpdValue} kPa (Propagation / Early Veg Stage)`;
+      } else if (vpdValue >= 0.8 && vpdValue < 1.2) {
+        vpdElement.style.color = 'blue';
+        vpdElement.innerHTML = `VPD Atual: ${vpdValue} kPa (Late Veg / Early Flower Stage)`;
+      } else if (vpdValue >= 1.2 && vpdValue <= 1.6) {
+        vpdElement.style.color = 'purple';
+        vpdElement.innerHTML = `VPD Atual: ${vpdValue} kPa (Mid / Late Flower Stage)`;
+      };
 }
 
 async function createTemperatureChart() {
