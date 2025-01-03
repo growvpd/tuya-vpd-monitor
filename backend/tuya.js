@@ -1,63 +1,130 @@
 const axios = require('axios');
+const crypto = require('crypto');
 
-// Configurações da Tuya
-const CLIENT_ID = process.env.TUYA_CLIENT_ID;
-const CLIENT_SECRET = process.env.TUYA_CLIENT_SECRET;
-const API_BASE = 'https://openapi.tuyaus.com/v1.0';
-let ACCESS_TOKEN = null;
+// Configurações
+const debug = true;
+const ClientID = "sjsmr9rtnsn8fgj7rrce";
+const ClientSecret = "9bb34ec30170490eb03dd45532f1bf53";
+const BaseUrl = "https://openapi.tuyaus.com";
+const EmptyBodyEncoded = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
-// Função para obter o token de acesso
+// Função para gerar a assinatura HMAC-SHA256
+function generateSignature(stringToSign, secret) {
+  return crypto
+    .createHmac('sha256', secret)
+    .update(stringToSign)
+    .digest('hex')
+    .toUpperCase();
+}
+
+// Obter token de acesso
 async function getAccessToken() {
-  try {
-    if (ACCESS_TOKEN) {
-      return ACCESS_TOKEN; // Usa o token em cache se disponível
-    }
+  const tuyatime = `${Date.now()}`; // Gera um timestamp a cada requisição
+  const URL = "/v1.0/token?grant_type=1";
+  const StringToSign = `${ClientID}${tuyatime}GET\n${EmptyBodyEncoded}\n\n${URL}`;
+  if (debug) console.log(`StringToSign is now: ${StringToSign}`);
 
-    const response = await axios.post(`${API_BASE}/token`, {}, {
+  const AccessTokenSign = generateSignature(StringToSign, ClientSecret);
+  if (debug) console.log(`AccessTokenSign is now: ${AccessTokenSign}`);
+
+  try {
+    const response = await axios.get(`${BaseUrl}${URL}`, {
       headers: {
+        'sign_method': 'HMAC-SHA256',
+        'client_id': ClientID,
+        't': tuyatime,
+        'mode': 'cors',
         'Content-Type': 'application/json',
-        client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
+        'sign': AccessTokenSign,
       },
     });
-
-    ACCESS_TOKEN = response.data.result.access_token;
-    setTimeout(() => (ACCESS_TOKEN = null), (response.data.result.expire_time - 60) * 1000); // Expira o token um minuto antes do tempo total
-    return ACCESS_TOKEN;
+    if (debug) console.log(`AccessTokenResponse is now:`, response.data);
+    return response.data.result.access_token;
   } catch (error) {
-    console.error('Erro ao obter o token de acesso:', error.response?.data || error.message);
-    throw new Error('Falha ao obter o token de acesso');
+    console.error("Error fetching Access Token:", error.message);
+    throw error;
   }
 }
 
-// Função para enviar comandos para o dispositivo
-async function sendTuyaCommand(deviceId, commandCode, value) {
+// Obter status do dispositivo
+async function getDeviceStatus(accessToken, deviceIds) {
+  const tuyatime = `${Date.now()}`; // Gera um timestamp a cada requisição
+  const URL = `/v1.0/iot-03/devices/status?device_ids=${deviceIds}`;
+  const StringToSign = `${ClientID}${accessToken}${tuyatime}GET\n${EmptyBodyEncoded}\n\n${URL}`;
+  if (debug) console.log(`StringToSign is now: ${StringToSign}`);
+
+  const RequestSign = generateSignature(StringToSign, ClientSecret);
+  if (debug) console.log(`RequestSign is now: ${RequestSign}`);
+
   try {
-    const token = await getAccessToken();
-
-    const command = {
-      commands: [{ code: commandCode, value }],
-    };
-
-    const response = await axios.post(
-      `${API_BASE}/devices/${deviceId}/commands`,
-      command,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
-    console.log(`Comando enviado com sucesso: ${commandCode} = ${value}`);
-    return response.data;
+    const response = await axios.get(`${BaseUrl}${URL}`, {
+      headers: {
+        'sign_method': 'HMAC-SHA256',
+        'client_id': ClientID,
+        't': tuyatime,
+        'mode': 'cors',
+        'Content-Type': 'application/json',
+        'sign': RequestSign,
+        'access_token': accessToken,
+      },
+    });
+    if (debug) console.log(`RequestResponse is now:`, response.data);
+    return response.data.result;
   } catch (error) {
-    console.error('Erro ao enviar comando:', error.response?.data || error.message);
-    throw new Error('Falha ao enviar comando');
+    console.error("Error fetching Device Status:", error.message);
+    throw error;
   }
 }
 
+// Função para obter os dados do dispositivo (token + status)
+async function fetchTuyaData(deviceIds) {
+  const accessToken = await getAccessToken();
+  const deviceStatus = await getDeviceStatus(accessToken, deviceIds);
+  return deviceStatus;
+}
+
+// Função para extrair temperatura e umidade do status do dispositivo
+function extractTemperatureAndHumidity(deviceStatus) {
+  let temperature = null;
+  let humidity = null;
+
+  deviceStatus.forEach((device) => {
+    device.status.forEach((item) => {
+      if (item.code === 'va_temperature') {
+        temperature = item.value / 10; // Normalizar para °C, se necessário
+      } else if (item.code === 'va_humidity') {
+        humidity = item.value / 10;
+      }
+    });
+  });
+
+  console.log("Temperatura:", JSON.stringify(temperature, null, 2));
+  console.log("Humidade:", JSON.stringify(humidity, null, 2));
+
+  if (temperature === null || humidity === null) {
+    throw new Error('Não foi possível encontrar temperatura ou umidade no status do dispositivo.');
+  }
+  return { temperature, humidity };
+}
+
+// Exportações
 module.exports = {
-  sendTuyaCommand,
+  getAccessToken,
+  getDeviceStatus,
+  fetchTuyaData,
+  extractTemperatureAndHumidity,
 };
+
+// Fluxo principal para teste
+(async function () {
+  try {
+    const deviceIds = "eb8faf00e42469ffaahezh";
+    const deviceStatus = await fetchTuyaData(deviceIds);
+    console.log("Device Status:", deviceStatus);
+
+    const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
+    console.log("Temperatura:", temperature, "Humidade:", humidity);
+  } catch (error) {
+    console.error("An error occurred:", error.message);
+  }
+})();
