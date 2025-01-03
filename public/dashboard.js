@@ -22,7 +22,7 @@ async function createChart(canvasId, label, yAxisLabel, dataKey, maxAdjustment, 
           !item._id.month ||
           !item._id.day ||
           !item._id.hour ||
-          !item._id.minutes
+          !item._id.minute
         ) {
           console.warn('Dados de data incompletos:', item._id);
           return 'Data Inválida'; // Retorna uma string de fallback
@@ -34,7 +34,7 @@ async function createChart(canvasId, label, yAxisLabel, dataKey, maxAdjustment, 
           item._id.month - 1,
           item._id.day,
           item._id.hour,
-          item._id.minutes
+          item._id.minute
         );
     
         if (isNaN(timestamp.getTime())) {
