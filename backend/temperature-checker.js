@@ -7,6 +7,7 @@ const ClientID = "sjsmr9rtnsn8fgj7rrce";
 const ClientSecret = "9bb34ec30170490eb03dd45532f1bf53";
 const BaseUrl = "https://openapi.tuyaus.com";
 const EmptyBodyEncoded = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+const DeviceId = 'ebf025fcebde746b5akmak'; // Substitua pelo ID do dispositivo
 
 // Função para gerar a assinatura HMAC-SHA256
 function generateSignature(stringToSign, secret) {
