@@ -3,17 +3,25 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
-const { fetchTuyaData, sendTuyaCommand } = require('./tuya'); // Adiciona `sendTuyaCommand`
+const { fetchTuyaData, extractTemperatureAndHumidity } = require('./tuya');
 
 const app = express();
 const PORT = 3000; // Porta onde o servidor vai rodar
 
 // Configuração do MongoDB
-require('dotenv').config();
+require('dotenv').config(); // Carregar variáveis de ambiente do arquivo .env
 
 mongoose.connect(process.env.MONGODB_URI, {})
   .then(() => console.log('Conectado ao MongoDB!'))
   .catch(err => console.error('Erro ao conectar ao MongoDB:', err));
+
+// Esquema e Modelo para armazenar dados de VPD
+const VPDData = mongoose.model('VPDData', new mongoose.Schema({
+  temperature: Number,
+  humidity: Number,
+  vpd: Number,
+  timestamp: { type: Date, default: Date.now },
+}));
 
 // Middleware
 app.use(bodyParser.json());
@@ -22,35 +30,93 @@ app.use(cors());
 // Servir arquivos estáticos na pasta "public"
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Página principal do controle do ar-condicionado
-app.get('/ac-control', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public', 'ac-control.html'));
+// Rota para acessar o gráfico principal
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
-// Endpoint para controlar o ar-condicionado
-app.post('/ac-control', async (req, res) => {
+// Rota para consultar o histórico agrupado por hora
+app.get('/vpd/history', async (req, res) => {
   try {
-    const { action, temperature } = req.body; // Recebe "ligar", "desligar" e "temperatura"
-    const deviceId = 'ebf025fcebde746b5akmak'; // ID do dispositivo Tuya
+    const history = await VPDData.aggregate([
+      {
+        $group: {
+          _id: {
+            hour: { $hour: "$timestamp" },
+            day: { $dayOfMonth: "$timestamp" },
+            month: { $month: "$timestamp" },
+            year: { $year: "$timestamp" }
+          },
+          avgVPD: { $avg: "$vpd" },
+          avgTemperature: { $avg: "$temperature" },
+          avgHumidity: { $avg: "$humidity" }
+        }
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1, "_id.hour": 1 } }
+    ]);
 
-    // Enviar comando para o dispositivo
-    if (action === 'ligar') {
-      await sendTuyaCommand(deviceId, 'switch', true); // Liga o ar-condicionado
-      if (temperature) {
-        await sendTuyaCommand(deviceId, 'temp_set', parseInt(temperature, 10)); // Configura a temperatura
-      }
-    } else if (action === 'desligar') {
-      await sendTuyaCommand(deviceId, 'switch', false); // Desliga o ar-condicionado
-    }
-
-    res.json({ success: true, message: 'Comando enviado com sucesso!' });
+    res.json(history);
   } catch (error) {
-    console.error('Erro ao controlar o ar-condicionado:', error.message);
-    res.status(500).json({ error: 'Erro ao controlar o ar-condicionado.' });
+    console.error('Erro ao buscar histórico:', error.message);
+    res.status(500).json({ error: 'Erro ao buscar histórico.' });
   }
 });
 
-// Inicia o servidor
+// Função para calcular o VPD
+function calculateVPD(temperature, humidity) {
+  const svp = 0.6108 * Math.exp((17.27 * temperature) / (temperature + 237.3)); // Pressão de vapor saturada (kPa)
+  const avp = (humidity / 100) * svp; // Pressão de vapor atual (kPa)
+  return svp - avp; // VPD
+}
+
+// Endpoint para consultar o VPD em tempo real
+app.get('/vpd', async (req, res) => {
+  try {
+    const deviceIds = 'eb8faf00e42469ffaahezh'; // Substitua pelo ID do dispositivo
+    const deviceStatus = await fetchTuyaData(deviceIds);
+
+    // Extrair temperatura e umidade
+    const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
+
+    // Calcular o VPD
+    const vpd = calculateVPD(temperature, humidity);
+
+    // Retornar os dados no formato JSON
+    res.json({
+      temperature,
+      humidity,
+      vpd: vpd.toFixed(2),
+    });
+  } catch (error) {
+    console.error('Erro ao consultar VPD:', error.message);
+    res.status(500).json({ error: 'Erro ao obter dados.' });
+  }
+});
+
+// Função para salvar os dados a cada 15 segundos
+async function saveVPDData() {
+  try {
+    const deviceIds = 'eb8faf00e42469ffaahezh'; // Substitua pelo ID do dispositivo
+    const deviceStatus = await fetchTuyaData(deviceIds);
+
+    // Extrair temperatura e umidade
+    const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
+
+    // Calcular o VPD
+    const vpd = calculateVPD(temperature, humidity);
+
+    // Salvar no banco
+    await new VPDData({ temperature, humidity, vpd }).save();
+    console.log(`Dados salvos: Temperatura: ${temperature}, Umidade: ${humidity}, VPD: ${vpd.toFixed(2)}`);
+  } catch (error) {
+    console.error('Erro ao salvar dados:', error.message);
+  }
+}
+
+// Configura o intervalo de 15 segundos
+setInterval(saveVPDData, 15000);
+
+// Inicia o servidor (apenas uma vez)
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
