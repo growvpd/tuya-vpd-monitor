@@ -87,7 +87,7 @@ async function sendCommandToDevice(command) {
 async function checkTemperatureAndControlAC() {
     try {
       // Buscar temperatura do backend
-      const response = await axios.get(BackendUrl);
+      const response = await axios.get(server.js);
       const { temperature } = response.data;
   
       if (!temperature) {
