@@ -53,7 +53,7 @@ app.get('/vpd/history', async (req, res) => {
           avgHumidity: { $avg: "$humidity" }
         }
       },
-      { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1, "_id.hour": 1 } }
+      { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1, "_id.hour": 1, "_id.minutes": 1  } }
     ]);
 
     res.json(history);
