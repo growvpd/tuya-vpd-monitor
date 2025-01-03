@@ -59,10 +59,10 @@ async function checkTemperatureAndControlAC() {
     console.log(`Temperatura Atual: ${temperature}°C`);
 
     // Controle do ar-condicionado
-    if (temperature >= 28) {
+    if (temperature >= 30) {
       console.log("Temperatura alta. Ligando ar-condicionado.");
       await sendCommandToDevice(true); // Liga o ar-condicionado
-    } else if (temperature < 27) {
+    } else if (temperature < 27.6) {
       console.log("Temperatura baixa. Desligando ar-condicionado.");
       await sendCommandToDevice(false); // Desliga o ar-condicionado
     } else {
