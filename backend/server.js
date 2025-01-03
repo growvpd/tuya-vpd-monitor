@@ -44,7 +44,7 @@ app.get('/vpd/history', async (req, res) => {
           _id: {
             hour: { $hour: "$timestamp" },
             day: { $dayOfMonth: "$timestamp" },
-            minutes: {$minutes: "$timestamp"},
+            minute: {$minute: "$timestamp"},
             month: { $month: "$timestamp" },
             year: { $year: "$timestamp" }
           },
@@ -53,7 +53,7 @@ app.get('/vpd/history', async (req, res) => {
           avgHumidity: { $avg: "$humidity" }
         }
       },
-      { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1, "_id.hour": 1, "_id.minutes": 1  } }
+      { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1, "_id.hour": 1, "_id.minute": 1  } }
     ]);
 
     res.json(history);
