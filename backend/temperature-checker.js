@@ -73,3 +73,6 @@ async function sendCommandToDevice(state) {
 
 // Iniciar o controle do AC
 setInterval(checkTemperatureAndControlAC, 15000); // Executa a cada 15 segundos
+
+module.exports = { checkTemperatureAndControlAC };
+
