@@ -1,13 +1,54 @@
 const axios = require("axios");
+const crypto = require("crypto");
 
-// URL do backend para buscar os dados de temperatura
-const serverUrl = "https://tuya-vpd-monitor.onrender.com/vpd"; // Substitua pelo URL do servidor em produção
+// Configurações da API Tuya
+const ClientID = "sjsmr9rtnsn8fgj7rrce"; // Substitua pelo seu ClientID
+const ClientSecret = "9bb34ec30170490eb03dd45532f1bf53"; // Substitua pelo seu ClientSecret
+const BaseUrl = "https://openapi.tuyaus.com"; // URL base da Tuya Cloud
+const DeviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo Tuya
+const debug = true;
+
+// Função para gerar a assinatura HMAC-SHA256
+function generateSignature(stringToSign, secret) {
+  return crypto
+    .createHmac("sha256", secret)
+    .update(stringToSign)
+    .digest("hex")
+    .toUpperCase();
+}
+
+// Função para obter o token de acesso
+async function getAccessToken() {
+  const tuyatime = `${Date.now()}`;
+  const URL = "/v1.0/token?grant_type=1";
+  const StringToSign = `${ClientID}${tuyatime}GET\n\n${URL}`;
+  const AccessTokenSign = generateSignature(StringToSign, ClientSecret);
+
+  try {
+    const response = await axios.get(`${BaseUrl}${URL}`, {
+      headers: {
+        "sign_method": "HMAC-SHA256",
+        "client_id": ClientID,
+        t: tuyatime,
+        mode: "cors",
+        "Content-Type": "application/json",
+        sign: AccessTokenSign,
+      },
+    });
+    if (debug) console.log("AccessToken Response:", response.data);
+    return response.data.result.access_token;
+  } catch (error) {
+    console.error("Erro ao obter o token de acesso:", error.message);
+    throw error;
+  }
+}
 
 // Função para verificar a temperatura e controlar o AC
 async function checkTemperatureAndControlAC() {
   try {
     // Fazer requisição ao servidor para obter a temperatura
-    const response = await axios.get(`${serverUrl}`);
+    const serverUrl = "https://tuya-vpd-monitor.onrender.com/vpd"; // URL do backend
+    const response = await axios.get(serverUrl);
     const { temperature } = response.data;
 
     if (!temperature) {
@@ -34,15 +75,13 @@ async function checkTemperatureAndControlAC() {
 
 // Função para enviar comando ao dispositivo Tuya
 async function sendCommandToDevice(state) {
-  const deviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo Tuya
-  const accessToken = await getAccessToken();
-
-  const tuyatime = `${Date.now()}`;
-  const URL = `/v1.0/iot-03/devices/${deviceId}/commands`;
-  const StringToSign = `${ClientID}${accessToken}${tuyatime}POST\n\n${URL}`;
-  const RequestSign = generateSignature(StringToSign, ClientSecret);
-
   try {
+    const accessToken = await getAccessToken();
+    const tuyatime = `${Date.now()}`;
+    const URL = `/v1.0/iot-03/devices/${DeviceId}/commands`;
+    const StringToSign = `${ClientID}${accessToken}${tuyatime}POST\n\n${URL}`;
+    const RequestSign = generateSignature(StringToSign, ClientSecret);
+
     await axios.post(
       `${BaseUrl}${URL}`,
       {
@@ -55,16 +94,17 @@ async function sendCommandToDevice(state) {
       },
       {
         headers: {
-          sign_method: "HMAC-SHA256",
-          client_id: ClientID,
+          "sign_method": "HMAC-SHA256",
+          "client_id": ClientID,
           t: tuyatime,
           mode: "cors",
           "Content-Type": "application/json",
           sign: RequestSign,
-          access_token: accessToken,
+          "access_token": accessToken,
         },
       }
     );
+
     console.log(`Comando enviado para o dispositivo: ${state ? "Ligar" : "Desligar"}`);
   } catch (error) {
     console.error("Erro ao enviar comando para o dispositivo:", error.message);
@@ -75,4 +115,3 @@ async function sendCommandToDevice(state) {
 setInterval(checkTemperatureAndControlAC, 15000); // Executa a cada 15 segundos
 
 module.exports = { checkTemperatureAndControlAC };
-
