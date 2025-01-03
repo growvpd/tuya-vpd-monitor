@@ -44,6 +44,7 @@ app.get('/vpd/history', async (req, res) => {
           _id: {
             hour: { $hour: "$timestamp" },
             day: { $dayOfMonth: "$timestamp" },
+            minutes: {$minutes: "$timestamp"},
             month: { $month: "$timestamp" },
             year: { $year: "$timestamp" }
           },
