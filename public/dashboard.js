@@ -15,20 +15,47 @@ async function createChart(canvasId, label, yAxisLabel, dataKey, maxAdjustment, 
 
     // Processar os dados agregados: ajustar o horário para UTC-3
     const labels = data.map((item) => {
-      const timestamp = new Date(
-        item._id.year,
-        item._id.month - 1,
-        item._id.day,
-        item._id.hour,
-        item._id.minutes
-      );
-      const localTime = new Date(timestamp.getTime() - 3 * 60 * 60 * 1000);
-      return localTime.toLocaleTimeString('pt-BR', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      });
+      try {
+        // Validar a existência dos campos de data
+        if (
+          !item._id.year ||
+          !item._id.month ||
+          !item._id.day ||
+          !item._id.hour ||
+          !item._id.minutes
+        ) {
+          console.warn('Dados de data incompletos:', item._id);
+          return 'Data Inválida'; // Retorna uma string de fallback
+        }
+    
+        // Criar a data e ajustar para UTC-3
+        const timestamp = new Date(
+          item._id.year,
+          item._id.month - 1,
+          item._id.day,
+          item._id.hour,
+          item._id.minutes
+        );
+    
+        if (isNaN(timestamp.getTime())) {
+          console.warn('Timestamp inválido:', item._id);
+          return 'Data Inválida';
+        }
+    
+        const localTime = new Date(timestamp.getTime() - 3 * 60 * 60 * 1000);
+    
+        // Formatar como hora:minuto:segundo
+        return localTime.toLocaleTimeString('pt-BR', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        });
+      } catch (error) {
+        console.error('Erro ao processar data:', error);
+        return 'Data Inválida';
+      }
     });
+    
 
     const chartData = data.map((item) => item[dataKey]);
     const canvas = document.getElementById(canvasId);
