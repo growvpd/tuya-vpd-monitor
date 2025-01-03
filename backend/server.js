@@ -122,7 +122,7 @@ app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
 
-const startTemperatureChecker = require('./temperature-checker');
+const checkTemperatureAndControlAC = require('./temperature-checker');
 
 // Inicializar o temperature-checker
-startTemperatureChecker();
+checkTemperatureAndControlAC();
