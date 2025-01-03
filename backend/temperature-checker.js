@@ -63,7 +63,7 @@ async function checkTemperatureAndControlAC() {
     console.log(`Temperatura Atual: ${temperature}°C`);
 
     // Controle do ar-condicionado
-    if (temperature >= 30) {
+    if (temperature >= 28.5) {
       console.log("Temperatura alta. Ligando ar-condicionado.");
       await sendCommandToDevice(true); // Liga o ar-condicionado
     } else if (temperature < 27.6) {
@@ -112,6 +112,30 @@ async function sendCommandToDevice(state) {
     console.log(`Comando enviado para o dispositivo: ${state ? "Ligar" : "Desligar"}`);
   } catch (error) {
     console.error("Erro ao enviar comando para o dispositivo:", error.message);
+  }
+}
+
+async function checkDeviceStatus(deviceId) {
+  const tuyatime = `${Date.now()}`;
+  const URL = `/v1.0/iot-03/devices/${deviceId}/status`;
+  const StringToSign = `${ClientID}${accessToken}${tuyatime}GET\n\n${URL}`;
+  const RequestSign = generateSignature(StringToSign, ClientSecret);
+
+  try {
+    const response = await axios.get(`${BaseUrl}${URL}`, {
+      headers: {
+        sign_method: "HMAC-SHA256",
+        client_id: ClientID,
+        t: tuyatime,
+        mode: "cors",
+        "Content-Type": "application/json",
+        sign: RequestSign,
+        access_token: accessToken,
+      },
+    });
+    console.log("Status do dispositivo:", response.data.result);
+  } catch (error) {
+    console.error("Erro ao verificar o status do dispositivo:", error.message);
   }
 }
 

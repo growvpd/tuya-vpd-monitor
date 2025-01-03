@@ -127,3 +127,38 @@ const { checkTemperatureAndControlAC } = require('./temperature-checker.js');
 // Inicializar o temperature-checker
 checkTemperatureAndControlAC();
 
+// logs do temperature checker
+try {
+  const response = await axios.post(
+    `${BaseUrl}${URL}`,
+    {
+      commands: [
+        {
+          code: "switch_1",
+          value: state,
+        },
+      ],
+    },
+    {
+      headers: {
+        sign_method: "HMAC-SHA256",
+        client_id: ClientID,
+        t: tuyatime,
+        mode: "cors",
+        "Content-Type": "application/json",
+        sign: RequestSign,
+        access_token: accessToken,
+      },
+    }
+  );
+
+  if (response.data.success) {
+    console.log(`Comando enviado com sucesso: ${state ? "Ligar" : "Desligar"}`);
+  } else {
+    console.error("Erro no envio do comando:", response.data);
+  }
+} catch (error) {
+  console.error("Erro ao enviar comando para o dispositivo:", error.message);
+}
+
+
