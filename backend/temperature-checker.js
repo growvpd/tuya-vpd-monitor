@@ -112,5 +112,11 @@ async function checkTemperatureAndControlAC() {
     }
   }
 
-// Configurar execução periódica a cada 15 segundos
-setInterval(checkTemperatureAndControlAC, 15000);
+
+  async function startTemperatureChecker() {
+    setInterval(async () => {
+      await checkTemperatureAndControlAC(); // Certifique-se de que esta função já existe
+    }, 15000); // Rodar a cada 15 segundos
+  }
+  
+  module.exports = startTemperatureChecker;

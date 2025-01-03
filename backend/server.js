@@ -121,3 +121,8 @@ setInterval(saveVPDData, 15000);
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+
+const startTemperatureChecker = require('./temperature-checker');
+
+// Inicializar o temperature-checker
+startTemperatureChecker();
