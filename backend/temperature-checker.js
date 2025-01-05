@@ -143,3 +143,4 @@ async function checkDeviceStatus(deviceId) {
 setInterval(checkTemperatureAndControlAC, 15000); // Executa a cada 15 segundos
 
 module.exports = { checkTemperatureAndControlAC };
+  
