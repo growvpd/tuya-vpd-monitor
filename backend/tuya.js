@@ -128,3 +128,6 @@ module.exports = {
     console.error("An error occurred:", error.message);
   }
 })();
+
+// Configura o intervalo de 15 segundos
+setInterval(getDeviceStatus, 5 * 59 * 1000);
