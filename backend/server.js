@@ -94,7 +94,7 @@ app.get('/vpd', async (req, res) => {
   }
 });
 
-// Função para salvar os dados a cada 15 segundos
+// Função para salvar os dados a cada 5 minutos
 async function saveVPDData() {
   try {
     const deviceIds = 'eb8faf00e42469ffaahezh'; // Substitua pelo ID do dispositivo
@@ -115,7 +115,7 @@ async function saveVPDData() {
 }
 
 // Configura o intervalo de 15 segundos
-setInterval(saveVPDData, 15000);
+setInterval(saveVPDData, 300000);
 
 // Inicia o servidor (apenas uma vez)
 app.listen(PORT, () => {
