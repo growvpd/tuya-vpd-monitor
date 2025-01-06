@@ -10,7 +10,7 @@ const {
   ClientSecret, 
   BaseUrl, 
   EmptyBodyEncoded, 
-  deviceIdstemperature
+  deviceIds
 } = require('./tuya');
 
 const app = express();
@@ -81,7 +81,7 @@ function calculateVPD(temperature, humidity) {
 // Endpoint para consultar o VPD em tempo real
 app.get('/vpd', async (req, res) => {
   try {
-    const deviceStatus = await fetchTuyaDataWithCache(deviceIdstemperature);
+    const deviceStatus = await fetchTuyaDataWithCache(deviceIds);
 
     // Extrair temperatura e umidade
     const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
@@ -104,7 +104,7 @@ app.get('/vpd', async (req, res) => {
 // Função para salvar os dados a cada 5 minutos
 async function saveVPDData() {
   try {
-    const deviceStatus = await fetchTuyaDataWithCache(deviceIdstemperature);
+    const deviceStatus = await fetchTuyaDataWithCache(deviceIds);
 
     // Extrair temperatura e umidade
     const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
