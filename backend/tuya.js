@@ -130,4 +130,5 @@ module.exports = {
 })();
 
 // Configura o intervalo de 15 segundos
-setInterval(extractTemperatureAndHumidity, 5 * 59 * 1000);
+setInterval(getDeviceStatus, 295000);
+setInterval(extractTemperatureAndHumidity, 295000);
