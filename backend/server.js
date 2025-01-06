@@ -115,7 +115,7 @@ async function saveVPDData() {
 }
 
 // Configura o intervalo de 15 segundos
-setInterval(saveVPDData, 300000);
+setInterval(saveVPDData, 5 * 60 * 1000);
 
 // Inicia o servidor (apenas uma vez)
 app.listen(PORT, () => {
