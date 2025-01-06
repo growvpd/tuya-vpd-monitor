@@ -7,7 +7,7 @@ const ClientID = "7j3tg7crd8gxr4rdsu7s";
 const ClientSecret = "ed01098ca59c40d2845de5ef25bb1dc9";
 const BaseUrl = "https://openapi.tuyaus.com";
 const EmptyBodyEncoded = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-const deviceIdstemperature = "eb8faf00e42469ffaahezh";
+const deviceIds = "eb8faf00e42469ffaahezh";
 
 // Função para gerar a assinatura HMAC-SHA256
 function generateSignature(stringToSign, secret) {
@@ -48,9 +48,9 @@ async function getAccessToken() {
 }
 
 // Obter status do dispositivo
-async function getDeviceStatus(accessToken, deviceIdstemperature) {
+async function getDeviceStatus(accessToken, deviceIds) {
   const tuyatime = `${Date.now()}`; // Gera um timestamp a cada requisição
-  const URL = `/v1.0/iot-03/devices/status?device_ids=${deviceIdstemperature}`;
+  const URL = `/v1.0/iot-03/devices/status?device_ids=${deviceIds}`;
   const StringToSign = `${ClientID}${accessToken}${tuyatime}GET\n${EmptyBodyEncoded}\n\n${URL}`;
   if (debug) console.log(`StringToSign is now: ${StringToSign}`);
 
@@ -82,14 +82,14 @@ let cachedData = null;
 let cacheTimestamp = null;
 const CACHE_DURATION = 10 * 60 * 1000; // Cache válido por 10 minutos
 
-async function fetchTuyaDataWithCache(deviceIdstemperature) {
+async function fetchTuyaDataWithCache(deviceIds) {
   if (cachedData && cacheTimestamp && Date.now() - cacheTimestamp < CACHE_DURATION) {
     console.log("Retornando dados do cache.");
     return cachedData;
   }
 
   const accessToken = await getAccessToken();
-  const deviceStatus = await getDeviceStatus(accessToken, deviceIdstemperature);
+  const deviceStatus = await getDeviceStatus(accessToken, deviceIds);
 
   cachedData = deviceStatus; // Atualiza o cache
   cacheTimestamp = Date.now(); // Atualiza o timestamp
@@ -133,7 +133,7 @@ module.exports = {
 if (debug) {
   (async function () {
     try {
-      const deviceStatus = await fetchTuyaDataWithCache(deviceIdstemperature);
+      const deviceStatus = await fetchTuyaDataWithCache(deviceIds);
       console.log("Device Status:", deviceStatus);
 
       const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
