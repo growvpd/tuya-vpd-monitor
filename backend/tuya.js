@@ -133,7 +133,7 @@ module.exports = {
 if (debug) {
   (async function () {
     try {
-      const deviceStatus = await fetchTuyaData(deviceIds);
+      const deviceStatus = await fetchTuyaDataWithCache(deviceIds);
       console.log("Device Status:", deviceStatus);
 
       const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
