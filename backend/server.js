@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
-const { fetchTuyaDataWithCache, extractTemperatureAndHumidity ,  ClientID, ClientSecret, BaseUrl, EmptyBodyEncoded, deviceIdstemperature  } = require('.tuya.js');
+const { fetchTuyaDataWithCache, extractTemperatureAndHumidity ,  ClientID, ClientSecret, BaseUrl, EmptyBodyEncoded, deviceIdstemperature  } = require('/tuya.js');
 
 const app = express();
 const PORT = 3000; // Porta onde o servidor vai rodar
