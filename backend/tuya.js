@@ -7,6 +7,7 @@ const ClientID = "7j3tg7crd8gxr4rdsu7s";
 const ClientSecret = "ed01098ca59c40d2845de5ef25bb1dc9";
 const BaseUrl = "https://openapi.tuyaus.com";
 const EmptyBodyEncoded = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+const deviceIds = "eb8faf00e42469ffaahezh";
 
 // Função para gerar a assinatura HMAC-SHA256
 function generateSignature(stringToSign, secret) {
@@ -77,10 +78,23 @@ async function getDeviceStatus(accessToken, deviceIds) {
 }
 
 // Função para obter os dados do dispositivo (token + status)
-async function fetchTuyaData(deviceIds) {
+let cachedData = null;
+let cacheTimestamp = null;
+const CACHE_DURATION = 10 * 60 * 1000; // Cache válido por 10 minutos
+
+async function fetchTuyaDataWithCache(deviceIds) {
+  if (cachedData && cacheTimestamp && Date.now() - cacheTimestamp < CACHE_DURATION) {
+    console.log("Retornando dados do cache.");
+    return cachedData;
+  }
+
   const accessToken = await getAccessToken();
   const deviceStatus = await getDeviceStatus(accessToken, deviceIds);
-  return deviceStatus;
+
+  cachedData = deviceStatus; // Atualiza o cache
+  cacheTimestamp = Date.now(); // Atualiza o timestamp
+  console.log("Dados atualizados no cache.");
+  return cachedData;
 }
 
 // Função para extrair temperatura e umidade do status do dispositivo
@@ -115,20 +129,17 @@ module.exports = {
   extractTemperatureAndHumidity,
 };
 
-// Fluxo principal para teste
-(async function () {
-  try {
-    const deviceIds = "eb8faf00e42469ffaahezh";
-    const deviceStatus = await fetchTuyaData(deviceIds);
-    console.log("Device Status:", deviceStatus);
+// Apenas para testes manuais ou depuração, não necessário na execução contínua
+if (debug) {
+  (async function () {
+    try {
+      const deviceStatus = await fetchTuyaData(deviceIds);
+      console.log("Device Status:", deviceStatus);
 
-    const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
-    console.log("Temperatura:", temperature, "Humidade:", humidity);
-  } catch (error) {
-    console.error("An error occurred:", error.message);
-  }
-})();
-
-// Configura o intervalo de 15 segundos
-setInterval(getDeviceStatus, 295000);
-setInterval(extractTemperatureAndHumidity, 295000);
+      const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
+      console.log("Temperatura:", temperature, "Humidade:", humidity);
+    } catch (error) {
+      console.error("An error occurred:", error.message);
+    }
+  })();
+}
