@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
-const { fetchTuyaData, extractTemperatureAndHumidity } = require('./tuya');
+const { fetchTuyaDataWithCache, extractTemperatureAndHumidity } = require('./tuya');
 
 const app = express();
 const PORT = 3000; // Porta onde o servidor vai rodar
@@ -74,7 +74,7 @@ function calculateVPD(temperature, humidity) {
 app.get('/vpd', async (req, res) => {
   try {
     const deviceIds = 'eb8faf00e42469ffaahezh'; // Substitua pelo ID do dispositivo
-    const deviceStatus = await fetchTuyaData(deviceIds);
+    const deviceStatus = await fetchTuyaDataWithCache(deviceIds);
 
     // Extrair temperatura e umidade
     const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
@@ -98,7 +98,7 @@ app.get('/vpd', async (req, res) => {
 async function saveVPDData() {
   try {
     const deviceIds = 'eb8faf00e42469ffaahezh'; // Substitua pelo ID do dispositivo
-    const deviceStatus = await fetchTuyaData(deviceIds);
+    const deviceStatus = await fetchTuyaDataWithCache(deviceIds);
 
     // Extrair temperatura e umidade
     const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
