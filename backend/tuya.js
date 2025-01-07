@@ -125,7 +125,6 @@ function extractTemperatureAndHumidity(deviceStatus) {
 module.exports = {
   getAccessToken,
   getDeviceStatus,
-  checkAr,
   fetchTuyaDataWithCache,
   extractTemperatureAndHumidity,
 };
