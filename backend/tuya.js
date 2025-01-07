@@ -121,27 +121,6 @@ function extractTemperatureAndHumidity(deviceStatus) {
   return { temperature, humidity };
 }
 
-// Função para saber se o AC2 está ligado ou desligado
-function checkAr(deviceStatus) {
-  let arcondicionado = null;
-
-  deviceStatus.forEach((device) => {
-    device.status.forEach((item) => {
-      if (item.code === 'switch_1') {
-        arcondicionado = item.value;
-      }
-    });
-  });
-
-  console.log("Ar condicinado:", JSON.stringify(arcondicionado, null, 2));
-  console.log("Humidade:", JSON.stringify(humidity, null, 2));
-
-  if (arcondicionado === null) {
-    throw new Error('Não foi possível encontrar o status do dispositivo ar condicionado.');
-  }
-  return { temperature, humidity };
-}
-
 // Exportações
 module.exports = {
   getAccessToken,
