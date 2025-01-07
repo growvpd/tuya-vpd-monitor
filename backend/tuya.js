@@ -122,11 +122,10 @@ function extractTemperatureAndHumidity(deviceStatus) {
 }
 
 // Função para saber se o AC2 está ligado ou desligado
-function checkar(deviceStatus2) {
+function checkAr(deviceStatus) {
   let arcondicionado = null;
-  let humidity = null;
 
-  deviceStatus2.forEach((device) => {
+  deviceStatus.forEach((device) => {
     device.status.forEach((item) => {
       if (item.code === 'switch_1') {
         arcondicionado = item.value;
@@ -147,7 +146,7 @@ function checkar(deviceStatus2) {
 module.exports = {
   getAccessToken,
   getDeviceStatus,
-  getDeviceStatus2,
+  checkAr,
   fetchTuyaDataWithCache,
   extractTemperatureAndHumidity,
 };
