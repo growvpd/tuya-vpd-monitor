@@ -12,6 +12,26 @@ async function createChart(canvasId, label, yAxisLabel, dataKey, maxAdjustment, 
       console.warn(`Nenhum dado disponível para o gráfico de ${label}.`);
       return;
     }
+    
+        // *** FILTRAR OS DADOS DAS ÚLTIMAS 12 HORAS ***
+        const now = new Date(); // Hora atual
+        const twelveHoursAgo = new Date(now.getTime() - 12 * 60 * 60 * 1000); // 12 horas atrás
+    
+        // Filtrar os dados que são mais recentes que 12 horas
+        const filteredData = data.filter((item) => {
+          const timestamp = new Date(
+            item._id.year,
+            item._id.month - 1, // Ajuste para meses baseados em 0
+            item._id.day,
+            item._id.hour,
+            item._id.minute || 0 // Use 0 se minutos não forem fornecidos
+          );
+          return timestamp >= twelveHoursAgo;
+        });
+    
+        console.log("Dados filtrados (últimas 12 horas):", filteredData);
+    
+        // *** FIM DA FILTRAGEM ***
 
     // Processar os dados agregados: ajustar o horário para UTC-3
     const labels = data.map((item) => {
