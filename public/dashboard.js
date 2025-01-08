@@ -34,7 +34,7 @@ async function createChart(canvasId, label, yAxisLabel, dataKey, maxAdjustment, 
         // *** FIM DA FILTRAGEM ***
 
     // Processar os dados agregados: ajustar o horário para UTC-3
-    const labels = data.map((item) => {
+    const labels = filteredData.map((item) => {
       try {
         // Validar a existência dos campos de data
         if (
@@ -77,7 +77,7 @@ async function createChart(canvasId, label, yAxisLabel, dataKey, maxAdjustment, 
     });
     
 
-    const chartData = data.map((item) => item[dataKey]);
+    const chartData = filteredData.map((item) => item[dataKey]);
     const canvas = document.getElementById(canvasId);
     const ctx = canvas.getContext('2d');
 
