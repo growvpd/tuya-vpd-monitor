@@ -168,6 +168,11 @@ async function createChart(canvasId, label, yAxisLabel, dataKey, maxAdjustment, 
       },
     };
 
+    if (!chartData || chartData.length === 0) {
+      console.warn(`Nenhum dado válido para o gráfico de ${label}.`);
+      return;
+    }
+
     // Criar o novo gráfico
     window[`${canvasId}Instance`] = new Chart(ctx, chartOptions);
   } catch (error) {
