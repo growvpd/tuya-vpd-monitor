@@ -127,8 +127,9 @@ module.exports = {
   getDeviceStatus,
   fetchTuyaDataWithCache,
   extractTemperatureAndHumidity,
+  deviceIds,
 };
-
+  
 // Apenas para testes manuais ou depuração, não necessário na execução contínua
 if (debug) {
   (async function () {
