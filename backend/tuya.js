@@ -181,6 +181,8 @@ async function getAccessToken() {
 
 // Adicione `getAccessToken` ao objeto module.exports
 module.exports = {
+  ClientID,
+  ClientSecret,
   getAccessToken,
   generateSignature, // Certifique-se de exportar todas as funções necessárias
   // Outras funções ou variáveis exportadas
