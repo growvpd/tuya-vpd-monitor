@@ -144,3 +144,17 @@ if (debug) {
     }
   })();
 }
+
+// Exporte a função no arquivo tuya.js
+function generateSignature(stringToSign, secret) {
+  return crypto
+    .createHmac('sha256', secret)
+    .update(stringToSign)
+    .digest('hex')
+    .toUpperCase();
+}
+
+module.exports = {
+  generateSignature, // Adicione a função aqui
+  // Outras exportações
+};
