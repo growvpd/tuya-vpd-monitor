@@ -1,12 +1,11 @@
 const express = require("express");
 const axios = require("axios");
-const { ClientID, ClientSecret, getAccessToken, generateSignature } = require('./tuya');// Importar funções e variaveis do arquivo `tuya.js`
+const { ClientID, ClientSecret, getAccessToken, generateSignature, BaseUrl } = require('./tuya'); // Importar funções e variáveis do arquivo `tuya.js`
 
 const router = express.Router();
 
 // Configurações específicas do dispositivo
 const deviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo Tuya
-const BaseUrl = "https://openapi.tuyaus.com"; // URL base da Tuya API
 
 // Função para enviar comando ao dispositivo Tuya
 async function sendDeviceCommand(commandCode, commandValue) {
@@ -14,8 +13,8 @@ async function sendDeviceCommand(commandCode, commandValue) {
     const accessToken = await getAccessToken(); // Obter o token de acesso
     const tuyatime = `${Date.now()}`;
     const URL = `/v1.0/iot-03/devices/${deviceId}/commands`;
-    const StringToSign = `${process.env.CLIENT_ID}${accessToken}${tuyatime}POST\n\n${URL}`;
-    const RequestSign = generateSignature(StringToSign, process.env.CLIENT_SECRET);
+    const StringToSign = `${ClientID}${accessToken}${tuyatime}POST\n\n${URL}`;
+    const RequestSign = generateSignature(StringToSign, ClientSecret);
 
     const response = await axios.post(
       `${BaseUrl}${URL}`,
@@ -30,7 +29,7 @@ async function sendDeviceCommand(commandCode, commandValue) {
       {
         headers: {
           sign_method: "HMAC-SHA256",
-          client_id: process.env.CLIENT_ID,
+          client_id: ClientID,
           t: tuyatime,
           mode: "cors",
           "Content-Type": "application/json",
