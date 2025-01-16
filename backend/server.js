@@ -127,3 +127,21 @@ setInterval(saveVPDData, 5 * 60 * 1000);
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+
+const axios = require("axios");
+
+// Função para fazer ping no servidor a cada 5 minutos
+setInterval(async () => {
+  try {
+    const response = await axios.get("https://tuya-vpd-monitor.onrender.com/");
+    console.log(`Ping bem-sucedido: ${response.status}`);
+  } catch (error) {
+    console.error("Erro ao fazer ping no servidor:", error.message);
+  }
+}, 5 * 60 * 1000); // Executa a cada 5 minutos
+
+// Integre o controle de dispositivo do roteador ao server.js:
+const deviceControlRouter = require("./backend/device-control");
+
+// Adicionar rota para o controle de dispositivos
+app.use("/api/device-control", deviceControlRouter);

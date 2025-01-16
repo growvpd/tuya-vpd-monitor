@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle de Dispositivos</title>
+</head>
+<body>
+  <h1>Controle de Dispositivos Tuya</h1>
+  <button id="turnOn">Ligar Dispositivo</button>
+  <button id="turnOff">Desligar Dispositivo</button>
+
+  <script>
+    document.getElementById("turnOn").addEventListener("click", async () => {
+      const response = await fetch("/api/device-control/on", { method: "POST" });
+      const result = await response.json();
+      alert(result.message || "Erro ao enviar comando.");
+    });
+
+    document.getElementById("turnOff").addEventListener("click", async () => {
+      const response = await fetch("/api/device-control/off", { method: "POST" });
+      const result = await response.json();
+      alert(result.message || "Erro ao enviar comando.");
+    });
+  </script>
+</body>
+</html>
