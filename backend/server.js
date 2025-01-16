@@ -141,7 +141,7 @@ setInterval(async () => {
 }, 5 * 60 * 1000); // Executa a cada 5 minutos
 
 // Integre o controle de dispositivo do roteador ao server.js:
-const deviceControlRouter = require("./backend/device-control");
+const deviceControlRouter = require("./device-control");
 
 // Adicionar rota para o controle de dispositivos
 app.use("/api/device-control", deviceControlRouter);
