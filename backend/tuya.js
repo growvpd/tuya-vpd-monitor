@@ -154,7 +154,34 @@ function generateSignature(stringToSign, secret) {
     .toUpperCase();
 }
 
+// Adicione a função getAccessToken ao module.exports no tuya.js
+async function getAccessToken() {
+  const tuyatime = `${Date.now()}`;
+  const URL = "/v1.0/token?grant_type=1";
+  const StringToSign = `${ClientID}${tuyatime}GET\n${EmptyBodyEncoded}\n\n${URL}`;
+  const AccessTokenSign = generateSignature(StringToSign, ClientSecret);
+
+  try {
+    const response = await axios.get(`${BaseUrl}${URL}`, {
+      headers: {
+        sign_method: "HMAC-SHA256",
+        client_id: ClientID,
+        t: tuyatime,
+        mode: "cors",
+        "Content-Type": "application/json",
+        sign: AccessTokenSign,
+      },
+    });
+    return response.data.result.access_token;
+  } catch (error) {
+    console.error("Error fetching Access Token:", error.message);
+    throw error;
+  }
+}
+
+// Adicione `getAccessToken` ao objeto module.exports
 module.exports = {
-  generateSignature, // Adicione a função aqui
-  // Outras exportações
+  getAccessToken,
+  generateSignature, // Certifique-se de exportar todas as funções necessárias
+  // Outras funções ou variáveis exportadas
 };
