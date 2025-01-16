@@ -131,9 +131,7 @@ module.exports = {
   ClientID,
   ClientSecret,
   getAccessToken,
-  generateSignaturegit add .
-  git commit -m "pagina para ligar e desligar dispositivos"
-  git push origin main
+  generateSignature
 };
   
 // Apenas para testes manuais ou depuração, não necessário na execução contínua
