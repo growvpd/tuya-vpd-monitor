@@ -10,7 +10,8 @@ const deviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo Tuya
 // Função para enviar comando ao dispositivo Tuya
 async function sendDeviceCommand(commandCode, commandValue) {
   try {
-    const accessToken = await getAccessToken(); // Obter o token de acesso
+    console.log(`Enviando comando: ${commandCode} = ${commandValue}`);
+    const accessToken = await getAccessToken(); // Obter token de acesso
     const tuyatime = `${Date.now()}`;
     const URL = `/v1.0/iot-03/devices/${deviceId}/commands`;
     const StringToSign = `${ClientID}${accessToken}${tuyatime}POST\n\n${URL}`;
@@ -39,13 +40,14 @@ async function sendDeviceCommand(commandCode, commandValue) {
       }
     );
 
-    console.log(`Comando enviado: ${commandCode} = ${commandValue}`);
+    console.log("Resposta do servidor:", response.data);
     return response.data;
   } catch (error) {
     console.error("Erro ao enviar comando para o dispositivo:", error.message);
     throw error;
   }
 }
+
 
 // Rota para ligar o dispositivo
 router.post("/on", async (req, res) => {
