@@ -133,6 +133,7 @@ module.exports = {
   getAccessToken,
   generateSignature,
   BaseUrl
+  AccessTokenSign
 };
   
 // Apenas para testes manuais ou depuração, não necessário na execução contínua
