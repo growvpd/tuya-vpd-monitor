@@ -1,52 +1,30 @@
 const express = require("express");
 const axios = require("axios");
-const { ClientID, ClientSecret, generateSignature, BaseUrl, EmptyBodyEncoded, debug } = require('./tuya'); // Importar funções e variáveis do arquivo `tuya.js`
-
+const { ClientID, ClientSecret, getAccessToken, generateSignature } = require("./tuya"); // Importando funções e variáveis do arquivo tuya.js
 
 const router = express.Router();
 
 // Configurações específicas do dispositivo
 const deviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo Tuya
+const BaseUrl = "https://openapi.tuyaus.com"; // URL base da Tuya API
 
-// Obter token de acesso
-async function getAccessToken() {
-  const tuyatime = `${Date.now()}`; // Gera um timestamp a cada requisição
-  const URL = "/v1.0/token?grant_type=1";
-  const StringToSign = `${ClientID}${tuyatime}GET\n${EmptyBodyEncoded}\n\n${URL}`;
-  if (debug) console.log(`StringToSign is now: ${StringToSign}`);
-
-  const AccessTokenSign = generateSignature(StringToSign, ClientSecret);
-  if (debug) console.log(`AccessTokenSign is now: ${AccessTokenSign}`);
-
-  try {
-    const response = await axios.get(`${BaseUrl}${URL}`, {
-      headers: {
-        'sign_method': 'HMAC-SHA256',
-        'client_id': ClientID,
-        't': tuyatime,
-        'mode': 'cors',
-        'Content-Type': 'application/json',
-        'sign': AccessTokenSign,
-      },
-    });
-    if (debug) console.log(`AccessTokenResponse is now:`, response.data);
-    return response.data.result.access_token;
-  } catch (error) {
-    console.error("Error fetching Access Token:", error.message);
-    throw error;
-  }
-}
-
-// Função para enviar comando ao dispositivo Tuya
+/**
+ * Função para enviar comando ao dispositivo Tuya
+ * @param {string} commandCode - O código do comando (ex: "switch_1" para ligar/desligar)
+ * @param {boolean} commandValue - O valor do comando (true para ligar, false para desligar)
+ */
 async function sendDeviceCommand(commandCode, commandValue) {
   try {
-    console.log(`Enviando comando: ${commandCode} = ${commandValue}`);
-    const accessToken = await getAccessToken(); // Obter token de acesso
-    const tuyatime = `${Date.now()}`;
-    const URL = `/v1.0/iot-03/devices/${deviceId}/commands`;
-    const StringToSign = `${ClientID}${accessToken}${tuyatime}POST\n\n${URL}`;
-    const AccessTokenSign = generateSignature(StringToSign, ClientSecret);
+    // Obtém o token de acesso atualizado
+    const accessToken = await getAccessToken();
 
+    // Configurações do cabeçalho de autenticação
+    const tuyatime = `${Date.now()}`; // Timestamp atual
+    const URL = `/v1.0/iot-03/devices/${deviceId}/commands`; // Endpoint para enviar comandos ao dispositivo
+    const StringToSign = `${ClientID}${accessToken}${tuyatime}POST\n\n${URL}`;
+    const RequestSign = generateSignature(StringToSign, ClientSecret);
+
+    // Realiza a requisição POST para enviar o comando ao dispositivo
     const response = await axios.post(
       `${BaseUrl}${URL}`,
       {
@@ -59,24 +37,25 @@ async function sendDeviceCommand(commandCode, commandValue) {
       },
       {
         headers: {
-          'sign_method': 'HMAC-SHA256',
-          'client_id': ClientID,
-          't': tuyatime,
-          'mode': 'cors',
-          'Content-Type': 'application/json',
-          'sign': AccessTokenSign,
+          sign_method: "HMAC-SHA256",
+          client_id: ClientID,
+          t: tuyatime,
+          mode: "cors",
+          "Content-Type": "application/json",
+          sign: RequestSign,
+          access_token: accessToken, // Token de acesso válido
         },
       }
     );
 
+    console.log(`Comando enviado: ${commandCode} = ${commandValue}`);
     console.log("Resposta do servidor:", response.data);
-    return response.data;
+    return response.data; // Retorna a resposta do servidor
   } catch (error) {
     console.error("Erro ao enviar comando para o dispositivo:", error.message);
-    throw error;
+    throw error; // Lança o erro para que seja tratado no endpoint correspondente
   }
 }
-
 
 // Rota para ligar o dispositivo
 router.post("/on", async (req, res) => {
