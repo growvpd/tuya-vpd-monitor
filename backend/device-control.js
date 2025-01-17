@@ -46,7 +46,17 @@ async function sendDeviceCommand(commandCode, commandValue) {
         },
       }
     );
-
+    console.log("URL:", URL);
+    console.log("StringToSign:", StringToSign);
+    console.log("RequestSign:", RequestSign);
+    console.log("Headers:", {
+      sign_method: "HMAC-SHA256",
+      client_id: ClientID,
+      t: tuyatime,
+      sign: RequestSign,
+      access_token: accessToken,
+    });
+    
     console.log(`Comando enviado: ${commandCode} = ${commandValue}`);
     console.log("Resposta do servidor:", response.data);
     return response.data; // Retorna a resposta do servidor
