@@ -29,13 +29,12 @@ async function sendDeviceCommand(commandCode, commandValue) {
       },
       {
         headers: {
-          sign_method: "HMAC-SHA256",
-          client_id: ClientID,
-          t: tuyatime,
-          mode: "cors",
-          "Content-Type": "application/json",
-          sign: RequestSign,
-          access_token: accessToken,
+          'sign_method': 'HMAC-SHA256',
+          'client_id': ClientID,
+          't': tuyatime,
+          'mode': 'cors',
+          'Content-Type': 'application/json',
+          'sign': AccessTokenSign,
         },
       }
     );
