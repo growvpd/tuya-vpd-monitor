@@ -142,5 +142,5 @@ async function checkDeviceStatus(deviceId) {
 // Iniciar o controle do AC
 setInterval(checkTemperatureAndControlAC, 300000); // Executa a cada 15 segundos
 
-module.exports = { checkTemperatureAndControlAC };
+module.exports = { checkTemperatureAndControlAC, AccessTokenSign };
   
