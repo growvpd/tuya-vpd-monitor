@@ -132,7 +132,7 @@ module.exports = {
   ClientSecret,
   getAccessToken,
   generateSignature,
-  BaseUrl
+  BaseUrl,
   AccessTokenSign
 };
   
