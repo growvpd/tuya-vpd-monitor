@@ -1,12 +1,41 @@
 const express = require("express");
 const axios = require("axios");
-const { ClientID, ClientSecret, getAccessToken, generateSignature, BaseUrl, AccessTokenSign } = require('./tuya'); // Importar funções e variáveis do arquivo `tuya.js`
+const { ClientID, ClientSecret, getAccessToken, generateSignature, BaseUrl } = require('./tuya'); // Importar funções e variáveis do arquivo `tuya.js`
 
 
 const router = express.Router();
 
 // Configurações específicas do dispositivo
 const deviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo Tuya
+
+// Obter token de acesso
+async function getAccessToken() {
+  const tuyatime = `${Date.now()}`; // Gera um timestamp a cada requisição
+  const URL = "/v1.0/token?grant_type=1";
+  const StringToSign = `${ClientID}${tuyatime}GET\n${EmptyBodyEncoded}\n\n${URL}`;
+  if (debug) console.log(`StringToSign is now: ${StringToSign}`);
+
+  const AccessTokenSign = generateSignature(StringToSign, ClientSecret);
+  if (debug) console.log(`AccessTokenSign is now: ${AccessTokenSign}`);
+
+  try {
+    const response = await axios.get(`${BaseUrl}${URL}`, {
+      headers: {
+        'sign_method': 'HMAC-SHA256',
+        'client_id': ClientID,
+        't': tuyatime,
+        'mode': 'cors',
+        'Content-Type': 'application/json',
+        'sign': AccessTokenSign,
+      },
+    });
+    if (debug) console.log(`AccessTokenResponse is now:`, response.data);
+    return response.data.result.access_token;
+  } catch (error) {
+    console.error("Error fetching Access Token:", error.message);
+    throw error;
+  }
+}
 
 // Função para enviar comando ao dispositivo Tuya
 async function sendDeviceCommand(commandCode, commandValue) {
