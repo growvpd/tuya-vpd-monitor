@@ -1,6 +1,6 @@
 const express = require("express");
 const axios = require("axios");
-const { ClientID, ClientSecret, getAccessToken, generateSignature } = require("./tuya"); // Importando funções e variáveis do arquivo tuya.js
+const { ClientID, ClientSecret, getAccessToken, generateSignature, EmptyBodyEncoded } = require("./tuya"); // Importando funções e variáveis do arquivo tuya.js
 
 const router = express.Router();
 
