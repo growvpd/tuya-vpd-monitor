@@ -132,7 +132,8 @@ module.exports = {
   ClientSecret,
   getAccessToken,
   generateSignature,
-  BaseUrl
+  BaseUrl,
+  EmptyBodyEncoded
 };
   
 // Apenas para testes manuais ou depuração, não necessário na execução contínua
