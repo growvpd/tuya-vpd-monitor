@@ -45,7 +45,7 @@ async function sendDeviceCommand(commandCode, commandValue) {
     const tuyatime = `${Date.now()}`;
     const URL = `/v1.0/iot-03/devices/${deviceId}/commands`;
     const StringToSign = `${ClientID}${accessToken}${tuyatime}POST\n\n${URL}`;
-    const RequestSign = generateSignature(StringToSign, ClientSecret);
+    const AccessTokenSign = generateSignature(StringToSign, ClientSecret);
 
     const response = await axios.post(
       `${BaseUrl}${URL}`,
