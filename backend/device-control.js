@@ -22,7 +22,7 @@ async function sendDeviceCommand(commandCode, commandValue) {
     const tuyatime = `${Date.now()}`; // Timestamp atual
     const URL = `/v1.0/iot-03/devices/${deviceId}/commands`; // Endpoint para enviar comandos ao dispositivo
   const StringToSign = `${ClientID}${tuyatime}GET\n${EmptyBodyEncoded}\n\n${URL}`;
-    const AccessTokenSign = generateSignature(StringToSign, ClientSecret);
+    const RequestSign = generateSignature(StringToSign, ClientSecret);
 
     // Realiza a requisição POST para enviar o comando ao dispositivo
     const response = await axios.post(
@@ -42,7 +42,7 @@ async function sendDeviceCommand(commandCode, commandValue) {
           't': tuyatime,
           'mode': 'cors',
           'Content-Type': 'application/json',
-          'sign': AccessTokenSign,
+          'sign': RequestSign,
         },
       }
     );
