@@ -133,7 +133,8 @@ module.exports = {
   getAccessToken,
   generateSignature,
   BaseUrl,
-  EmptyBodyEncoded
+  EmptyBodyEncoded,
+  debug
 };
   
 // Apenas para testes manuais ou depuração, não necessário na execução contínua
