@@ -4,12 +4,20 @@ const crypto = require("crypto");
 const { ClientID, ClientSecret, generateSignature, EmptyBodyEncoded, debug } = require("./tuya");
 
 const router = express.Router();
-const deviceId = "ebf025fcebde746b5akmak";
-const BaseUrl = "https://openapi.tuyaus.com";
+const deviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo
+const BaseUrl = "https://openapi.tuyaus.com"; // URL base da API Tuya
 
+// Configurações de temperatura
+let minTemperature = 24; // Temperatura mínima para desligar o AC
+let maxTemperature = 26; // Temperatura máxima para ligar o AC
+
+// Cache para o token de acesso
 let cachedToken = null;
 let tokenExpiration = null;
 
+/**
+ * Obter token de acesso com cache
+ */
 async function getAccessToken() {
   const currentTime = Date.now();
 
@@ -51,28 +59,20 @@ async function getAccessToken() {
   }
 }
 
+/**
+ * Enviar comando ao dispositivo
+ */
 async function sendDeviceCommand(commandCode, commandValue) {
   try {
     const accessToken = await getAccessToken();
     const tuyatime = Math.floor(Date.now()).toString();
     const URL = `/v1.0/iot-03/devices/${deviceId}/commands`;
-
     const body = JSON.stringify({
       commands: [{ code: commandCode, value: commandValue }],
     });
     const Content_SHA256 = crypto.createHash("sha256").update(body, "utf8").digest("hex");
     const StringToSign = `${ClientID}${accessToken}${tuyatime}POST\n${Content_SHA256}\n\n${URL}`;
     const RequestSign = generateSignature(StringToSign, ClientSecret);
-
-    console.log("StringToSign:", StringToSign);
-    console.log("Content_SHA256:", Content_SHA256);
-    console.log("Headers:", {
-      sign_method: "HMAC-SHA256",
-      client_id: ClientID,
-      t: tuyatime,
-      sign: RequestSign,
-      access_token: accessToken,
-    });
 
     const response = await axios.post(
       `${BaseUrl}${URL}`,
@@ -96,6 +96,33 @@ async function sendDeviceCommand(commandCode, commandValue) {
   }
 }
 
+/**
+ * Monitorar e controlar automaticamente o AC com base na temperatura
+ */
+async function monitorTemperature() {
+  try {
+    // Aqui você deve obter a temperatura de um sensor ou fonte externa.
+    // Exemplo: obtendo de um endpoint ou banco de dados.
+    const currentTemperature = Math.random() * (35 - 18) + 18; // Simulando uma temperatura aleatória
+    console.log("Temperatura atual:", currentTemperature);
+
+    if (currentTemperature >= maxTemperature) {
+      console.log("Temperatura alta, ligando o ar-condicionado...");
+      await sendDeviceCommand("switch_1", true);
+    } else if (currentTemperature <= minTemperature) {
+      console.log("Temperatura baixa, desligando o ar-condicionado...");
+      await sendDeviceCommand("switch_1", false);
+    } else {
+      console.log("Temperatura dentro da faixa aceitável, nenhuma ação necessária.");
+    }
+  } catch (error) {
+    console.error("Erro ao monitorar temperatura:", error.message);
+  }
+}
+
+// Configuração para monitoramento automático a cada 5 minutos
+setInterval(monitorTemperature, 300000);
+
 // Rotas
 router.post("/on", async (req, res) => {
   try {
@@ -113,6 +140,13 @@ router.post("/off", async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, message: "Erro ao desligar o dispositivo.", error: error.message });
   }
+});
+
+router.post("/set-temperature", (req, res) => {
+  const { minTemp, maxTemp } = req.body;
+  if (minTemp !== undefined) minTemperature = parseFloat(minTemp);
+  if (maxTemp !== undefined) maxTemperature = parseFloat(maxTemp);
+  res.json({ success: true, message: "Temperaturas atualizadas com sucesso!", minTemperature, maxTemperature });
 });
 
 module.exports = router;

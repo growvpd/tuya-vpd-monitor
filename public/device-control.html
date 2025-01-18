@@ -9,6 +9,12 @@
   <h1>Controle de Dispositivos Tuya</h1>
   <button id="turnOn">Ligar Dispositivo</button>
   <button id="turnOff">Desligar Dispositivo</button>
+  <h3>Configurar Temperaturas</h3>
+  <label for="minTemp">Temperatura Mínima (Desliga):</label>
+  <input type="number" id="minTemp" placeholder="Ex: 22">
+  <label for="maxTemp">Temperatura Máxima (Liga):</label>
+  <input type="number" id="maxTemp" placeholder="Ex: 28">
+  <button id="setTemp">Atualizar Configuração</button>
 
   <script>
     document.getElementById("turnOn").addEventListener("click", async () => {
@@ -21,6 +27,18 @@
       const response = await fetch("/api/device-control/off", { method: "POST" });
       const result = await response.json();
       alert(result.message || "Erro ao enviar comando.");
+    });
+
+    document.getElementById("setTemp").addEventListener("click", async () => {
+      const minTemp = document.getElementById("minTemp").value;
+      const maxTemp = document.getElementById("maxTemp").value;
+      const response = await fetch("/api/device-control/set-temperature", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ minTemp, maxTemp }),
+      });
+      const result = await response.json();
+      alert(result.message || "Erro ao atualizar temperaturas.");
     });
   </script>
 </body>
