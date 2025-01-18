@@ -12,7 +12,7 @@ const BaseUrl = "https://openapi.tuyaus.com"; // URL base da Tuya API
 async function getAccessToken() {
   const tuyatime = `${Date.now()}`; // Gera um timestamp a cada requisição
   const URL = "/v1.0/token?grant_type=1";
-  const StringToSign = `${ClientID}${tuyatime}GET\n${EmptyBodyEncoded}\n\n${URL}`;
+  const StringToSign = `${ClientID}${tuyatime}POST\n${EmptyBodyEncoded}\n\n${URL}`;
   if (debug) console.log(`StringToSign is now: ${StringToSign}`);
 
   const AccessTokenSign = generateSignature(StringToSign, ClientSecret);
