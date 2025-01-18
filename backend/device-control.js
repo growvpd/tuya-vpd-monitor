@@ -43,6 +43,7 @@ async function sendDeviceCommand(commandCode, commandValue) {
           'mode': 'cors',
           'Content-Type': 'application/json',
           'sign': RequestSign,
+          'access_token': accessToken,
         },
       }
     );
