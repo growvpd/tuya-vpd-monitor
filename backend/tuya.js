@@ -115,7 +115,7 @@ function extractTemperatureAndHumidity(deviceStatus) {
   console.log("Temperatura:", JSON.stringify(temperature, null, 2));
   console.log("Humidade:", JSON.stringify(humidity, null, 2));
 
-  const currentTemperature = temperature
+  const currentTemperature = temperature;
   console.log("Temperatura enviada para ar condicionado:", JSON.stringify(currentTemperature, null, 2));
 
   if (temperature === null || humidity === null) {
