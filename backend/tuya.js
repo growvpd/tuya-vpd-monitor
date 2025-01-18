@@ -134,7 +134,8 @@ module.exports = {
   generateSignature,
   BaseUrl,
   EmptyBodyEncoded,
-  debug
+  debug,
+  temperature
 };
   
 // Apenas para testes manuais ou depuração, não necessário na execução contínua

@@ -1,7 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const crypto = require("crypto");
-const { ClientID, ClientSecret, generateSignature, EmptyBodyEncoded, debug } = require("./tuya");
+const { ClientID, ClientSecret, generateSignature, EmptyBodyEncoded, debug, temperature } = require("./tuya");
 
 const router = express.Router();
 const deviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo
@@ -103,7 +103,7 @@ async function monitorTemperature() {
   try {
     // Aqui você deve obter a temperatura de um sensor ou fonte externa.
     // Exemplo: obtendo de um endpoint ou banco de dados.
-    const currentTemperature = Math.random() * (35 - 18) + 18; // Simulando uma temperatura aleatória
+    const currentTemperature = temperature; // Pegando temperatura do tuya.js
     console.log("Temperatura atual:", currentTemperature);
 
     if (currentTemperature >= maxTemperature) {
@@ -120,8 +120,8 @@ async function monitorTemperature() {
   }
 }
 
-// Configuração para monitoramento automático a cada 5 minutos
-setInterval(monitorTemperature, 300000);
+// Configuração para monitoramento automático a cada 15 segundo
+setInterval(monitorTemperature, 1500);
 
 // Rotas
 router.post("/on", async (req, res) => {
