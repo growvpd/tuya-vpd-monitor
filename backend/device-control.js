@@ -105,15 +105,17 @@ async function monitorTemperature() {
     // Exemplo: obtendo de um endpoint ou banco de dados.
     const currentTemperature = temperature; // Pegando temperatura do tuya.js
     console.log("Temperatura atual:", currentTemperature);
+    console.log("Temperatura minima:", minTemperature);
+    console.log("Temperatura minima:", maxTemperature);
 
     if (currentTemperature >= maxTemperature) {
-      console.log("Temperatura alta, ligando o ar-condicionado...");
+      console.log("Temperatura:", currentTemperature," maior que a maxTemperature:", maxTemperature, ", ligando o ar-condicionado...");
       await sendDeviceCommand("switch_1", true);
     } else if (currentTemperature <= minTemperature) {
-      console.log("Temperatura baixa, desligando o ar-condicionado...");
+      console.log("Temperatura:", currentTemperature," menor que a minTemperature:", minTemperature, ", desligando o ar-condicionado...");
       await sendDeviceCommand("switch_1", false);
     } else {
-      console.log("Temperatura dentro da faixa aceitável, nenhuma ação necessária.");
+      console.log("Temperatura dentro da faixa aceitável:", currentTemperature, " nenhuma ação necessária.");
     }
   } catch (error) {
     console.error("Erro ao monitorar temperatura:", error.message);

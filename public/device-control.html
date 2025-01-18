@@ -18,13 +18,13 @@
 
   <script>
     document.getElementById("turnOn").addEventListener("click", async () => {
-      const response = await fetch("/api/device-control/on", { method: "POST" });
+      const response = await fetch("/backend/device-control/on", { method: "POST" });
       const result = await response.json();
       alert(result.message || "Erro ao enviar comando.");
     });
 
     document.getElementById("turnOff").addEventListener("click", async () => {
-      const response = await fetch("/api/device-control/off", { method: "POST" });
+      const response = await fetch("/backend/device-control/off", { method: "POST" });
       const result = await response.json();
       alert(result.message || "Erro ao enviar comando.");
     });
@@ -32,7 +32,7 @@
     document.getElementById("setTemp").addEventListener("click", async () => {
       const minTemp = document.getElementById("minTemp").value;
       const maxTemp = document.getElementById("maxTemp").value;
-      const response = await fetch("/api/device-control/set-temperature", {
+      const response = await fetch("/backend/device-control/set-temperature", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ minTemp, maxTemp }),
