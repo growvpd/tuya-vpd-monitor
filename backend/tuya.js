@@ -28,7 +28,7 @@ async function getAccessToken() {
   const AccessTokenSign = generateSignature(StringToSign, ClientSecret);
   if (debug) console.log(`AccessTokenSign is now: ${AccessTokenSign}`);
 
-  try {
+  try {''
     const response = await axios.get(`${BaseUrl}${URL}`, {
       headers: {
         'sign_method': 'HMAC-SHA256',
