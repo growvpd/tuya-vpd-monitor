@@ -48,7 +48,7 @@ async function sendDeviceCommand(commandCode, commandValue) {
     const accessToken = await getAccessToken();
     const tuyatime = `${Date.now()}`; // Gera um timestamp a cada requisição
     const URL = `/v1.0/iot-03/devices/${deviceId}/commands`; // Endpoint para enviar comandos ao dispositivo
-    const StringToSign = `${ClientID}${accessToken}${tuyatime}GET\n${EmptyBodyEncoded}\n\n${URL}`;
+    const StringToSign = `${ClientID}${accessToken}${tuyatime}POST\n${EmptyBodyEncoded}\n\n${URL}`;
     const RequestSign = generateSignature(StringToSign, ClientSecret);
 
     // Realiza a requisição POST para enviar o comando ao dispositivo
