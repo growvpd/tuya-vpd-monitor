@@ -115,11 +115,17 @@ function extractTemperatureAndHumidity(deviceStatus) {
   console.log("Temperatura:", JSON.stringify(temperature, null, 2));
   console.log("Humidade:", JSON.stringify(humidity, null, 2));
 
+  const currentTemperature = temperature
+  console.log("Temperatura enviada para ar condicionado:", JSON.stringify(currentTemperature, null, 2));
+
   if (temperature === null || humidity === null) {
     throw new Error('Não foi possível encontrar temperatura ou umidade no status do dispositivo.');
   }
   return { temperature, humidity };
 }
+
+const currentTemperature = temperature
+console.log(currentTemperature)
 
 // Exportações
 module.exports = {
@@ -135,6 +141,7 @@ module.exports = {
   BaseUrl,
   EmptyBodyEncoded,
   debug,
+  currentTemperature
 };
   
 // Apenas para testes manuais ou depuração, não necessário na execução contínua
