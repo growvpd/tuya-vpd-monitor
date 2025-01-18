@@ -68,7 +68,7 @@ async function getAccessToken() {
 async function sendDeviceCommand(commandCode, commandValue) {
   try {
     const accessToken = await getAccessToken(); // Usa o token do cache ou gera um novo
-    const tuyatime = `${Date.now()}`;
+    const tuyatime = `${Date.now()}`; // Gera um timestamp a cada requisição
     const URL = `/v1.0/iot-03/devices/${deviceId}/commands`;
     const StringToSign = `${ClientID}${accessToken}${tuyatime}POST\n${EmptyBodyEncoded}\n\n${URL}`;
     const RequestSign = generateSignature(StringToSign, ClientSecret);
@@ -76,7 +76,7 @@ async function sendDeviceCommand(commandCode, commandValue) {
     const response = await axios.post(
       `${BaseUrl}${URL}`,
       {
-        commands: [
+        commands: [ 
           {
             code: commandCode,
             value: commandValue,
