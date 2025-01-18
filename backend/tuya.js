@@ -124,9 +124,6 @@ function extractTemperatureAndHumidity(deviceStatus) {
   return { temperature, humidity };
 }
 
-const currentTemperature = temperature
-console.log(currentTemperature)
-
 // Exportações
 module.exports = {
   getAccessToken,
