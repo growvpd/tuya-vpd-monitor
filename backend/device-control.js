@@ -1,30 +1,24 @@
 const express = require("express");
 const axios = require("axios");
+const crypto = require("crypto");
 const { ClientID, ClientSecret, generateSignature, EmptyBodyEncoded, debug } = require("./tuya");
 
 const router = express.Router();
-
-// Configurações específicas do dispositivo
-const deviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo Tuya
+const deviceId = "ebf025fcebde746b5akmak";
 const BaseUrl = "https://openapi.tuyaus.com";
 
-// Cache para o token de acesso
 let cachedToken = null;
 let tokenExpiration = null;
 
-/**
- * Obter token de acesso com cache
- */
 async function getAccessToken() {
   const currentTime = Date.now();
 
-  // Verificar se o token no cache ainda é válido
   if (cachedToken && tokenExpiration && currentTime < tokenExpiration) {
     console.log("Usando token do cache:", cachedToken);
     return cachedToken;
   }
 
-  const tuyatime = `${currentTime}`;
+  const tuyatime = Math.floor(currentTime).toString();
   const URL = "/v1.0/token?grant_type=1";
   const StringToSign = `${ClientID}${tuyatime}GET\n${EmptyBodyEncoded}\n\n${URL}`;
   if (debug) console.log("StringToSign is now:", StringToSign);
@@ -45,7 +39,7 @@ async function getAccessToken() {
 
     if (response.data.success) {
       cachedToken = response.data.result.access_token;
-      tokenExpiration = currentTime + response.data.result.expire_time * 1000; // Atualiza a expiração
+      tokenExpiration = currentTime + response.data.result.expire_time * 1000;
       console.log("Novo token gerado:", cachedToken);
       return cachedToken;
     } else {
@@ -57,20 +51,28 @@ async function getAccessToken() {
   }
 }
 
-/**
- * Função para enviar comando ao dispositivo Tuya
- */
 async function sendDeviceCommand(commandCode, commandValue) {
   try {
     const accessToken = await getAccessToken();
-    const tuyatime = `${Date.now()}`;
+    const tuyatime = Math.floor(Date.now()).toString();
     const URL = `/v1.0/iot-03/devices/${deviceId}/commands`;
+
     const body = JSON.stringify({
       commands: [{ code: commandCode, value: commandValue }],
     });
-    const Content_SHA256 = crypto.createHash("sha256").update(body).digest("hex");
+    const Content_SHA256 = crypto.createHash("sha256").update(body, "utf8").digest("hex");
     const StringToSign = `${ClientID}${accessToken}${tuyatime}POST\n${Content_SHA256}\n\n${URL}`;
     const RequestSign = generateSignature(StringToSign, ClientSecret);
+
+    console.log("StringToSign:", StringToSign);
+    console.log("Content_SHA256:", Content_SHA256);
+    console.log("Headers:", {
+      sign_method: "HMAC-SHA256",
+      client_id: ClientID,
+      t: tuyatime,
+      sign: RequestSign,
+      access_token: accessToken,
+    });
 
     const response = await axios.post(
       `${BaseUrl}${URL}`,
@@ -94,7 +96,7 @@ async function sendDeviceCommand(commandCode, commandValue) {
   }
 }
 
-// Rota para ligar o dispositivo
+// Rotas
 router.post("/on", async (req, res) => {
   try {
     const result = await sendDeviceCommand("switch_1", true);
@@ -104,7 +106,6 @@ router.post("/on", async (req, res) => {
   }
 });
 
-// Rota para desligar o dispositivo
 router.post("/off", async (req, res) => {
   try {
     const result = await sendDeviceCommand("switch_1", false);
