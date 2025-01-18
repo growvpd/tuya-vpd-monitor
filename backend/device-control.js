@@ -9,8 +9,23 @@ const deviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo Tuya
 const BaseUrl = "https://openapi.tuyaus.com"; // URL base da Tuya API
 
 // Obter token de acesso
+let cachedToken = null;
+let tokenExpiration = null;
+
+/**
+ * Obter token de acesso com cache
+ * @returns {Promise<string>} O token de acesso válido
+ */
 async function getAccessToken() {
-  const tuyatime = `${Date.now()}`; // Gera um timestamp a cada requisição
+  const currentTime = Date.now();
+
+  // Verificar se o token no cache ainda é válido
+  if (cachedToken && tokenExpiration && currentTime < tokenExpiration) {
+    console.log("Usando token do cache:", cachedToken);
+    return cachedToken;
+  }
+
+  const tuyatime = `${currentTime}`;
   const URL = "/v1.0/token?grant_type=1";
   const StringToSign = `${ClientID}${tuyatime}GET\n${EmptyBodyEncoded}\n\n${URL}`;
   if (debug) console.log(`StringToSign is now: ${StringToSign}`);
@@ -29,13 +44,21 @@ async function getAccessToken() {
         'sign': AccessTokenSign,
       },
     });
-    if (debug) console.log(`AccessTokenResponse is now:`, response.data);
-    return response.data.result.access_token;
+
+    if (response.data.success) {
+      cachedToken = response.data.result.access_token;
+      tokenExpiration = currentTime + response.data.result.expire_time * 1000; // Calcula a expiração
+      console.log("Novo token gerado:", cachedToken);
+      return cachedToken;
+    } else {
+      throw new Error(`Erro ao obter token: ${response.data.msg}`);
+    }
   } catch (error) {
-    console.error("Error fetching Access Token:", error.message);
+    console.error("Erro ao buscar Access Token:", error.message);
     throw error;
   }
 }
+
 
 /**
  * Função para enviar comando ao dispositivo Tuya
@@ -44,14 +67,12 @@ async function getAccessToken() {
  */
 async function sendDeviceCommand(commandCode, commandValue) {
   try {
-    // Configurações do cabeçalho de autenticação
-    const accessToken = await getAccessToken();
-    const tuyatime = `${Date.now()}`; // Gera um timestamp a cada requisição
-    const URL = `/v1.0/iot-03/devices/${deviceId}/commands`; // Endpoint para enviar comandos ao dispositivo
+    const accessToken = await getAccessToken(); // Usa o token do cache ou gera um novo
+    const tuyatime = `${Date.now()}`;
+    const URL = `/v1.0/iot-03/devices/${deviceId}/commands`;
     const StringToSign = `${ClientID}${accessToken}${tuyatime}POST\n${EmptyBodyEncoded}\n\n${URL}`;
     const RequestSign = generateSignature(StringToSign, ClientSecret);
 
-    // Realiza a requisição POST para enviar o comando ao dispositivo
     const response = await axios.post(
       `${BaseUrl}${URL}`,
       {
@@ -70,6 +91,7 @@ async function sendDeviceCommand(commandCode, commandValue) {
           'mode': 'cors',
           'Content-Type': 'application/json',
           'sign': RequestSign,
+          'access_token': accessToken, // Adiciona o token de acesso válido
         },
       }
     );
@@ -77,21 +99,23 @@ async function sendDeviceCommand(commandCode, commandValue) {
     console.log("StringToSign:", StringToSign);
     console.log("RequestSign:", RequestSign);
     console.log("Headers:", {
-      sign_method: "HMAC-SHA256",
-      client_id: ClientID,
-      t: tuyatime,
-      sign: RequestSign,
-      access_token: accessToken,
-    });
-    
-    console.log(`Comando enviado: ${commandCode} = ${commandValue}`);
-    console.log("Resposta do servidor:", response.data);
-    return response.data; // Retorna a resposta do servidor
+                  sign_method: "HMAC-SHA256",
+                  client_id: ClientID,
+                  t: tuyatime,
+                  sign: RequestSign,
+                  access_token: accessToken,
+});
+    console.log("Comando enviado: ", { commandCode, commandValue });
+
+    console.log("Comando enviado com sucesso:", response.data);
+    return response.data;
   } catch (error) {
     console.error("Erro ao enviar comando para o dispositivo:", error.message);
-    throw error; // Lança o erro para que seja tratado no endpoint correspondente
+    throw error;
   }
 }
+
+
 
 // Rota para ligar o dispositivo
 router.post("/on", async (req, res) => {
