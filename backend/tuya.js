@@ -129,6 +129,8 @@ function extractTemperatureAndHumidity(deviceStatus) {
 
 }
 
+console.log("Temperatura:", JSON.stringify(checkTemperature, null, 2));
+
 // Exportações
 module.exports = {
   getAccessToken,

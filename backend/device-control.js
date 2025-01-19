@@ -106,8 +106,8 @@ async function monitorTemperature() {
     // Exemplo: obtendo de um endpoint ou banco de dados.
 
     console.log("Temperatura atual:", checkTemperature);
-    console.log("Temperatura minima:", minTemperature);
-    console.log("Temperatura minima:", maxTemperature);
+    console.log("Temperatura mínima:", minTemperature);
+    console.log("Temperatura máxima:", maxTemperature);
 
     if (checkTemperature >= maxTemperature) {
       console.log("Temperatura:", checkTemperature," maior que a maxTemperature:", maxTemperature, ", ligando o ar-condicionado...");
@@ -124,7 +124,7 @@ async function monitorTemperature() {
 }
 
 // Configuração para monitoramento automático a cada 30 segundos
-setInterval(monitorTemperature, 300000);
+setInterval(monitorTemperature, 15000);
 
 // Rotas
 router.post("/on", async (req, res) => {
