@@ -156,7 +156,7 @@ if (debug) {
       console.log("Device Status:", deviceStatus);
 
       const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
-      console.log("Temperatura:", temperature, "Humidade:", humidity);
+      console.log("Temperatura:", temperature, "Humidade:", humidity, "Check Temperature:", checkTemperature);
     } catch (error) {
       console.error("An error occurred:", error.message);
     }
