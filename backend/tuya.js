@@ -7,7 +7,7 @@ const ClientID = "7j3tg7crd8gxr4rdsu7s";
 const ClientSecret = "ed01098ca59c40d2845de5ef25bb1dc9";
 const BaseUrl = "https://openapi.tuyaus.com";
 const EmptyBodyEncoded = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-const deviceIds = { "eb8faf00e42469ffaahezh" : "ebf025fcebde746b5akmak" };
+const deviceIds = "eb8faf00e42469ffaahezh";
 
 // Função para gerar a assinatura HMAC-SHA256
 function generateSignature(stringToSign, secret) {
@@ -106,29 +106,25 @@ function extractTemperatureAndHumidity(deviceStatus) {
   let humidity = null;
 
   deviceStatus.forEach((device) => {
-    console.log(`Status do dispositivo (${device.ids}):`, device.status);
     device.status.forEach((item) => {
-      if (item.code === "va_temperature") {
-        temperature = item.value / 10; // Normalizar para °C
-      } else if (item.code === "va_humidity") {
-        humidity = item.value / 10; // Normalizar para %
+      if (item.code === 'va_temperature') {
+        temperature = item.value / 10; // Normalizar para °C, se necessário
+      } else if (item.code === 'va_humidity') {
+        humidity = item.value / 10;
       }
     });
   });
 
-  console.log("Temperatura:", temperature);
-  console.log("Humidade:", humidity);
+  console.log("Temperatura:", JSON.stringify(temperature, null, 2));
+  console.log("Humidade:", JSON.stringify(humidity, null, 2));
 
   if (temperature === null || humidity === null) {
-    console.warn(
-      "Este dispositivo não possui sensores de temperatura ou umidade."
-    );
-    return null; // Retorna null se não houver sensores
+    throw new Error('Não foi possível encontrar temperatura ou umidade no status do dispositivo.');
   }
 
   return { temperature, humidity };
-}
 
+}
 
 // Função para obter e atualizar a temperatura atual do dispositivo
 async function updateTemperature() {
