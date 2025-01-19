@@ -13,14 +13,6 @@ const {
   deviceIds
 } = require('./tuya');
 
-// Conserto do device-control
-const deviceControl = require("./device-control"); // Certifique-se do caminho correto para o arquivo device-control.js
-// Middlewares necessários
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-// Rota para o dispositivo
-app.use("/backend/device-control", deviceControl);
-
 const app = express();
 const PORT = 3000; // Porta onde o servidor vai rodar
 
@@ -128,7 +120,7 @@ async function saveVPDData() {
   }
 }
 
-// Configura o intervalo de 5 minutos
+// Configura o intervalo de 5 minutos segundos
 setInterval(saveVPDData, 5 * 60 * 1000);
 
 // Inicia o servidor (apenas uma vez)

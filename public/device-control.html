@@ -138,7 +138,7 @@
 
     <!-- Display de Status -->
     <div class="status-display">
-      <span>Status: <strong id="deviceStatus">Desconhecido</strong></span>
+      <span><strong> Status do Ar condicionado:<id="deviceStatus"> </strong></span>
     </div>
 
     <!-- Botões de Controle -->
@@ -168,18 +168,6 @@
   </div>
 
   <script>
-    async function fetchData(url, options = {}) {
-      try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.message || "Erro desconhecido");
-        return data;
-      } catch (error) {
-        alert(`Erro: ${error.message}`);
-        console.error(error);
-      }
-    }
-
     // Atualiza o status do dispositivo
     function updateDeviceStatus(status) {
       const deviceStatus = document.getElementById("deviceStatus");
@@ -195,42 +183,32 @@
 
     // Ligar o dispositivo
     document.getElementById("turnOn").addEventListener("click", async () => {
-      const result = await fetchData("./backend/device-control/on", { method: "POST" });
-      if (result && result.success) {
-        alert(result.message);
-        updateDeviceStatus(true);
-      }
+      const response = await fetch("/backend/device-control/on", { method: "POST" });
+      const result = await response.json();
+      alert(result.message || "Erro ao enviar comando.");
+      if (result.success) updateDeviceStatus(true);
     });
 
     // Desligar o dispositivo
     document.getElementById("turnOff").addEventListener("click", async () => {
-      const result = await fetchData("./backend/device-control/off", { method: "POST" });
-      if (result && result.success) {
-        alert(result.message);
-        updateDeviceStatus(false);
-      }
+      const response = await fetch("/backend/device-control/off", { method: "POST" });
+      const result = await response.json();
+      alert(result.message || "Erro ao enviar comando.");
+      if (result.success) updateDeviceStatus(false);
     });
 
     // Atualizar temperaturas configuradas
     document.getElementById("updateTemp").addEventListener("click", async () => {
       const minTemp = document.getElementById("minTemp").value;
       const maxTemp = document.getElementById("maxTemp").value;
-
-      if (!minTemp || !maxTemp) {
-        alert("Por favor, insira valores válidos para as temperaturas.");
-        return;
-      }
-
-      const result = await fetchData("./backend/device-control/set-temperature", {
+      const response = await fetch("/backend/device-control/set-temperature", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ minTemp, maxTemp }),
       });
-
-      if (result && result.success) {
-        alert(result.message);
-        updateTemperatureDisplay(minTemp, maxTemp);
-      }
+      const result = await response.json();
+      alert(result.message || "Erro ao atualizar temperaturas.");
+      if (result.success) updateTemperatureDisplay(minTemp, maxTemp);
     });
 
     // Inicializa com as temperaturas padrão
