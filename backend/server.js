@@ -22,21 +22,9 @@ app.use(express.urlencoded({ extended: true }));
 // Rota para o dispositivo
 app.use("/backend/device-control", deviceControl);
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 const server = app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
-});
-
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`Porta ${PORT} já está em uso. Tentando outra porta...`);
-    const fallbackPort = PORT + 1; // Porta alternativa
-    app.listen(fallbackPort, () => {
-      console.log(`Servidor agora está rodando na porta ${fallbackPort}`);
-    });
-  } else {
-    console.error('Erro no servidor:', err);
-  }
 });
 
 
