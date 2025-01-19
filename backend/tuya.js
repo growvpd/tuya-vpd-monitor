@@ -153,6 +153,7 @@ module.exports = {
   EmptyBodyEncoded,
   debug,
   getTemperature: () => checkTemperature,
+  updateTemperature,
 };
   
 // Apenas para testes manuais ou depuração, não necessário na execução contínua
