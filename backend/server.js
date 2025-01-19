@@ -14,7 +14,8 @@ const {
 } = require('./tuya');
 
 // Conserto do device-control
-const deviceControl = require("/device-control"); // Certifique-se do caminho correto para o arquivo device-control.js
+const deviceControl = require("device-control"); // Certifique-se do caminho correto para o arquivo device-control.js
+
 // Middlewares necessários
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

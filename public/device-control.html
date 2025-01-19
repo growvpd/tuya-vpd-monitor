@@ -195,7 +195,7 @@
 
     // Ligar o dispositivo
     document.getElementById("turnOn").addEventListener("click", async () => {
-      const result = await fetchData("/backend/device-control/on", { method: "POST" });
+      const result = await fetchData("./backend/device-control/on", { method: "POST" });
       if (result && result.success) {
         alert(result.message);
         updateDeviceStatus(true);
@@ -204,7 +204,7 @@
 
     // Desligar o dispositivo
     document.getElementById("turnOff").addEventListener("click", async () => {
-      const result = await fetchData("/backend/device-control/off", { method: "POST" });
+      const result = await fetchData("./backend/device-control/off", { method: "POST" });
       if (result && result.success) {
         alert(result.message);
         updateDeviceStatus(false);
@@ -221,7 +221,7 @@
         return;
       }
 
-      const result = await fetchData("/backend/device-control/set-temperature", {
+      const result = await fetchData("./backend/device-control/set-temperature", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ minTemp, maxTemp }),
