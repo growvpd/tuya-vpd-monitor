@@ -13,8 +13,17 @@ const {
   deviceIds
 } = require('./tuya');
 
+// Conserto do device-control
+const deviceControl = require("/device-control"); // Certifique-se do caminho correto para o arquivo device-control.js
+// Middlewares necessários
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+// Rota para o dispositivo
+app.use("/backend/device-control", deviceControl);
+
 const app = express();
-const PORT = 3000; // Porta onde o servidor vai rodar
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
 
 // Configuração do MongoDB
 require('dotenv').config(); // Carregar variáveis de ambiente do arquivo .env
