@@ -13,14 +13,15 @@ const {
   deviceIds
 } = require('./tuya');
 
+const app = express();
 // Conserto do device-control
+const deviceControl = require("./device-control"); // Certifique-se de que este caminho está correto
 // Middlewares necessários
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // Rota para o dispositivo
 app.use("/backend/device-control", deviceControl);
 
-const app = express();
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
 
