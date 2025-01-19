@@ -106,10 +106,10 @@ function extractTemperatureAndHumidity(deviceStatus) {
   let humidity = null;
 
   deviceStatus.forEach((device) => {
-    console.log(`Status do dispositivo (${device.id}):`, device.status); // Loga o status do dispositivo
+    console.log(`Status do dispositivo (${device.id}):`, device.status);
     device.status.forEach((item) => {
       if (item.code === "va_temperature") {
-        temperature = item.value / 10; // Normalizar para °C, se necessário
+        temperature = item.value / 10; // Normalizar para °C
       } else if (item.code === "va_humidity") {
         humidity = item.value / 10; // Normalizar para %
       }
@@ -120,13 +120,15 @@ function extractTemperatureAndHumidity(deviceStatus) {
   console.log("Humidade:", humidity);
 
   if (temperature === null || humidity === null) {
-    throw new Error(
-      "Não foi possível encontrar temperatura ou umidade no status do dispositivo. Verifique os códigos de status retornados pela Tuya."
+    console.warn(
+      "Este dispositivo não possui sensores de temperatura ou umidade."
     );
+    return null; // Retorna null se não houver sensores
   }
 
   return { temperature, humidity };
 }
+
 
 // Função para obter e atualizar a temperatura atual do dispositivo
 async function updateTemperature() {

@@ -101,25 +101,33 @@ async function sendDeviceCommand(commandCode, commandValue) {
  */
 async function monitorTemperature() {
   try {
-    await updateTemperature(); // Atualiza a temperatura antes de monitorar
-    const checkTemperature = getTemperature();
-    console.log("Temperatura atual:", checkTemperature);
+    const deviceStatus = await fetchTuyaDataWithCache(deviceIds);
+    const sensorData = extractTemperatureAndHumidity(deviceStatus);
+
+    if (!sensorData) {
+      console.log("Dispositivo sem sensores de temperatura/umidade. Nenhuma ação necessária.");
+      return; // Sai da função se não houver sensores
+    }
+
+    const { temperature } = sensorData;
+    console.log("Temperatura atual:", temperature);
     console.log("Temperatura mínima:", minTemperature);
     console.log("Temperatura máxima:", maxTemperature);
 
-    if (checkTemperature >= maxTemperature) {
-      console.log("Temperatura:", checkTemperature," maior que a maxTemperature:", maxTemperature, ", ligando o ar-condicionado...");
+    if (temperature >= maxTemperature) {
+      console.log(`Temperatura ${temperature} acima de ${maxTemperature}. Ligando o ar-condicionado...`);
       await sendDeviceCommand("switch_1", true);
-    } else if (checkTemperature <= minTemperature) {
-      console.log("Temperatura:", checkTemperature," menor que a minTemperature:", minTemperature, ", desligando o ar-condicionado...");
+    } else if (temperature <= minTemperature) {
+      console.log(`Temperatura ${temperature} abaixo de ${minTemperature}. Desligando o ar-condicionado...`);
       await sendDeviceCommand("switch_1", false);
     } else {
-      console.log("Temperatura dentro da faixa aceitável:", checkTemperature, " nenhuma ação necessária.");
+      console.log(`Temperatura ${temperature} está dentro da faixa aceitável. Nenhuma ação necessária.`);
     }
   } catch (error) {
     console.error("Erro ao monitorar temperatura:", error.message);
   }
 }
+
 
 // Configuração para monitoramento automático a cada 30 segundos
 setInterval(monitorTemperature,  1 * 60 * 1000);
