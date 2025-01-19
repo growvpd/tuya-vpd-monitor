@@ -80,7 +80,7 @@ async function getDeviceStatus(accessToken, deviceIds) {
 // Função para obter os dados do dispositivo (token + status)
 let cachedData = null;
 let cacheTimestamp = null;
-const CACHE_DURATION = 10 * 60 * 1000; // Cache válido por 10 minutos
+const CACHE_DURATION = 5 * 60 * 1000; // Cache válido por 5 minutos
 
 async function fetchTuyaDataWithCache(deviceIds) {
   if (cachedData && cacheTimestamp && Date.now() - cacheTimestamp < CACHE_DURATION) {
@@ -176,7 +176,7 @@ if (debug) {
     } catch (error) {
       console.error("An error occurred:", error.message);
     }
-  })();
+  })(); 
 }
 
 // Exporte a função no arquivo tuya.js
