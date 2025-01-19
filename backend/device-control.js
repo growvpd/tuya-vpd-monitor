@@ -5,6 +5,7 @@ const { ClientID, ClientSecret, generateSignature, EmptyBodyEncoded, debug, getT
 
 const router = express.Router();
 const deviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo
+const deviceIds = "eb8faf00e42469ffaahezh";
 const BaseUrl = "https://openapi.tuyaus.com"; // URL base da API Tuya
 
 // Configurações de temperatura
@@ -167,7 +168,7 @@ router.get("/status", async (req, res) => {
     const accessToken = await getAccessToken();
 
     // Obtém o status do dispositivo
-    const deviceStatus = await getDeviceStatus(accessToken, deviceId);
+    const deviceStatus = await getDeviceStatus(accessToken, deviceIds);
 
     // Extrai informações relevantes
     const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
