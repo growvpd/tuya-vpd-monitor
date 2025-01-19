@@ -4,7 +4,7 @@ const crypto = require("crypto");
 const { ClientID, ClientSecret, generateSignature, EmptyBodyEncoded, debug, getTemperature, updateTemperature , getDeviceStatus , extractTemperatureAndHumidity , fetchTuyaDataWithCache } = require("./tuya");
 
 const router = express.Router();
-const deviceIds = "ebf025fcebde746b5akmak"; // ID do dispositivo
+const deviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo
 const BaseUrl = "https://openapi.tuyaus.com"; // URL base da API Tuya
 
 // Configurações de temperatura
@@ -66,7 +66,7 @@ async function sendDeviceCommand(commandCode, commandValue) {
   try {
     const accessToken = await getAccessToken();
     const tuyatime = Math.floor(Date.now()).toString();
-    const URL = `/v1.0/iot-03/devices/${deviceIds}/commands`;
+    const URL = `/v1.0/iot-03/devices/${deviceId}/commands`;
     const body = JSON.stringify({
       commands: [{ code: commandCode, value: commandValue }],
     });
@@ -101,7 +101,7 @@ async function sendDeviceCommand(commandCode, commandValue) {
  */
 async function monitorTemperature() {
   try {
-    const deviceStatus = await fetchTuyaDataWithCache(deviceIds);
+    const deviceStatus = await fetchTuyaDataWithCache(deviceId);
     const sensorData = extractTemperatureAndHumidity(deviceStatus);
 
     if (!sensorData) {
@@ -167,12 +167,12 @@ router.get("/status", async (req, res) => {
     const accessToken = await getAccessToken();
 
     // Obtém o status do dispositivo
-    const deviceStatus = await getDeviceStatus(accessToken, deviceIds);
+    const deviceStatus = await getDeviceStatus(accessToken, deviceId);
 
     // Extrai informações relevantes
     const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
 
-    const powerStatus = deviceStatus.find(device => device.id === deviceIds)?.status.find(s => s.code === "switch_1")?.value;
+    const powerStatus = deviceStatus.find(device => device.id === deviceId)?.status.find(s => s.code === "switch_1")?.value;
 
     // Retorna as informações no formato JSON
     res.json({
