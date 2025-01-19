@@ -4,118 +4,112 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Controle de Dispositivos</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    /* Inline styling for specific components */
-    .device-control {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.5rem;
-      padding: 2rem;
-      font-family: Arial, sans-serif;
-    }
-
-    .card {
-      background: #f9f9f9;
-      border-radius: 10px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      width: 80%;
-      max-width: 500px;
-    }
-
-    .card h2 {
-      margin-bottom: 1rem;
-    }
-
-    .card button {
-      margin-top: 1rem;
-      padding: 0.7rem 1.5rem;
-      font-size: 1rem;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .btn-on {
-      background-color: #4CAF50;
-    }
-
-    .btn-off {
-      background-color: #f44336;
-    }
-
-    input[type="number"] {
-      width: 100px;
-      padding: 0.5rem;
-      margin: 0.5rem;
-      font-size: 1rem;
-    }
-  </style>
+  <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <div class="device-control">
-    <h1>Controle de Dispositivos</h1>
+  <h1>Controle de Dispositivos Tuya</h1>
+  
+  <div id="device-status">
+    <h3>Status Atual</h3>
+    <p id="powerStatus">Estado: Desconhecido</p>
+    <p id="temperatureStatus">Temperatura: --</p>
+    <p id="humidityStatus">Umidade: --</p>
+  </div>
 
-    <!-- Device Status Card -->
-    <div class="card" id="statusCard">
-      <h2>Status do Dispositivo</h2>
-      <p id="deviceStatus">Desconhecido</p>
-      <button id="turnOn" class="btn-on">Ligar Dispositivo</button>
-      <button id="turnOff" class="btn-off">Desligar Dispositivo</button>
-    </div>
+  <div>
+    <button id="turnOn">Ligar Dispositivo</button>
+    <button id="turnOff">Desligar Dispositivo</button>
+  </div>
 
-    <!-- Temperature Configuration Card -->
-    <div class="card">
-      <h2>Configuração de Temperaturas</h2>
-      <p>Temperatura Mínima: <span id="currentMinTemp">-</span>°C</p>
-      <p>Temperatura Máxima: <span id="currentMaxTemp">-</span>°C</p>
-      <label for="minTemp">Nova Temperatura Mínima:</label>
-      <input type="number" id="minTemp" placeholder="Ex: 24">
-      <label for="maxTemp">Nova Temperatura Máxima:</label>
-      <input type="number" id="maxTemp" placeholder="Ex: 26">
-      <button id="setTemp" class="btn-on">Atualizar Configuração</button>
-    </div>
+  <div>
+    <h3>Configurar Temperaturas</h3>
+    <label for="minTemp">Temperatura Mínima (Desliga):</label>
+    <input type="number" id="minTemp" placeholder="Ex: 24">
+    <label for="maxTemp">Temperatura Máxima (Liga):</label>
+    <input type="number" id="maxTemp" placeholder="Ex: 26">
+    <button id="setTemp">Atualizar Configuração</button>
   </div>
 
   <script>
-    // Update Device Status
+    // Função para atualizar o status do dispositivo no frontend
     async function updateDeviceStatus() {
-      const status = await fetch('/api/device-control/status'); // Backend should implement `/status`
-      const result = await status.json();
-      document.getElementById("deviceStatus").innerText = result.isOn ? "Ligado" : "Desligado";
+      try {
+        const response = await fetch("/backend/device-control/status");
+        const data = await response.json();
+
+        if (data.success) {
+          document.getElementById("powerStatus").innerText = `Estado: ${data.powerStatus}`;
+          document.getElementById("temperatureStatus").innerText = `Temperatura: ${data.temperature}°C`;
+          document.getElementById("humidityStatus").innerText = `Umidade: ${data.humidity}%`;
+        } else {
+          alert("Erro ao obter o status do dispositivo.");
+        }
+      } catch (error) {
+        console.error("Erro ao atualizar status do dispositivo:", error.message);
+        alert("Erro ao obter o status do dispositivo.");
+      }
     }
 
-    // Attach Event Listeners for Buttons
-    document.getElementById("turnOn").addEventListener("click", async () => {
-      await fetch("/api/device-control/on", { method: "POST" });
-      updateDeviceStatus();
-    });
-
-    document.getElementById("turnOff").addEventListener("click", async () => {
-      await fetch("/api/device-control/off", { method: "POST" });
-      updateDeviceStatus();
-    });
-
-    document.getElementById("setTemp").addEventListener("click", async () => {
-      const minTemp = document.getElementById("minTemp").value;
-      const maxTemp = document.getElementById("maxTemp").value;
-      const response = await fetch("/api/device-control/set-temperature", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ minTemp, maxTemp }),
-      });
-      const result = await response.json();
-      document.getElementById("currentMinTemp").innerText = result.minTemperature || "-";
-      document.getElementById("currentMaxTemp").innerText = result.maxTemperature || "-";
-      alert(result.message || "Erro ao atualizar temperaturas.");
-    });
-
-    // Initial Setup
+    // Atualizar o status ao carregar a página
     updateDeviceStatus();
+
+    // Ligar dispositivo
+    document.getElementById("turnOn").addEventListener("click", async () => {
+      try {
+        const response = await fetch("/backend/device-control/on", { method: "POST" });
+        const result = await response.json();
+        if (result.success) {
+          alert(result.message || "Dispositivo ligado com sucesso.");
+          updateDeviceStatus(); // Atualiza o status após ligar
+        } else {
+          alert(result.message || "Erro ao ligar o dispositivo.");
+        }
+      } catch (error) {
+        console.error("Erro ao ligar dispositivo:", error.message);
+        alert("Erro ao ligar o dispositivo.");
+      }
+    });
+
+    // Desligar dispositivo
+    document.getElementById("turnOff").addEventListener("click", async () => {
+      try {
+        const response = await fetch("/backend/device-control/off", { method: "POST" });
+        const result = await response.json();
+        if (result.success) {
+          alert(result.message || "Dispositivo desligado com sucesso.");
+          updateDeviceStatus(); // Atualiza o status após desligar
+        } else {
+          alert(result.message || "Erro ao desligar o dispositivo.");
+        }
+      } catch (error) {
+        console.error("Erro ao desligar dispositivo:", error.message);
+        alert("Erro ao desligar o dispositivo.");
+      }
+    });
+
+    // Atualizar configurações de temperatura
+    document.getElementById("setTemp").addEventListener("click", async () => {
+      try {
+        const minTemp = document.getElementById("minTemp").value;
+        const maxTemp = document.getElementById("maxTemp").value;
+
+        const response = await fetch("/backend/device-control/set-temperature", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ minTemp, maxTemp }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          alert(result.message || "Configurações atualizadas com sucesso.");
+        } else {
+          alert(result.message || "Erro ao atualizar configurações.");
+        }
+      } catch (error) {
+        console.error("Erro ao atualizar configurações:", error.message);
+        alert("Erro ao atualizar configurações.");
+      }
+    });
   </script>
 </body>
 </html>
