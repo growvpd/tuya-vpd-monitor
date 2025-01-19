@@ -126,14 +126,22 @@ function extractTemperatureAndHumidity(deviceStatus) {
 
 }
 
-// Função para obter temperatura atual
+// Função para obter e atualizar a temperatura atual do dispositivo
 async function updateTemperature() {
   try {
+    // Obtém o status do dispositivo utilizando a função com cache para evitar chamadas redundantes
     const deviceStatus = await fetchTuyaDataWithCache(deviceIds);
+
+    // Extrai a temperatura e a umidade do status do dispositivo retornado
     const { temperature } = extractTemperatureAndHumidity(deviceStatus);
-    checkTemperature = temperature; // Atualiza a variável global
+
+    // Atualiza a variável global `checkTemperature` com a temperatura obtida
+    checkTemperature = temperature;
+
+    // Loga a temperatura atualizada no console para fins de depuração
     console.log("Temperatura check atualizada:", checkTemperature);
   } catch (error) {
+    // Em caso de erro, exibe uma mensagem de erro no console com detalhes
     console.error("Erro ao atualizar temperatura check:", error.message);
   }
 }

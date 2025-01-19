@@ -1,7 +1,9 @@
 const express = require("express");
 const axios = require("axios");
 const crypto = require("crypto");
-const { ClientID, ClientSecret, generateSignature, EmptyBodyEncoded, debug, getTemperature, updateTemperature  } = require("./tuya");
+const { ClientID, ClientSecret, generateSignature, EmptyBodyEncoded, debug, getTemperature, updateTemperature
+
+  } = require("./tuya");
 
 const router = express.Router();
 const deviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo
@@ -122,7 +124,7 @@ async function monitorTemperature() {
 }
 
 // Configuração para monitoramento automático a cada 30 segundos
-setInterval(monitorTemperature, 15000);
+setInterval(monitorTemperature,  1 * 60 * 1000);
 
 // Rotas
 router.post("/on", async (req, res) => {
