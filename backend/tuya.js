@@ -106,24 +106,26 @@ function extractTemperatureAndHumidity(deviceStatus) {
   let humidity = null;
 
   deviceStatus.forEach((device) => {
+    console.log(`Status do dispositivo (${device.id}):`, device.status); // Loga o status do dispositivo
     device.status.forEach((item) => {
-      if (item.code === 'va_temperature') {
+      if (item.code === "va_temperature") {
         temperature = item.value / 10; // Normalizar para °C, se necessário
-      } else if (item.code === 'va_humidity') {
-        humidity = item.value / 10;
+      } else if (item.code === "va_humidity") {
+        humidity = item.value / 10; // Normalizar para %
       }
     });
   });
 
-  console.log("Temperatura:", JSON.stringify(temperature, null, 2));
-  console.log("Humidade:", JSON.stringify(humidity, null, 2));
+  console.log("Temperatura:", temperature);
+  console.log("Humidade:", humidity);
 
   if (temperature === null || humidity === null) {
-    throw new Error('Não foi possível encontrar temperatura ou umidade no status do dispositivo.');
+    throw new Error(
+      "Não foi possível encontrar temperatura ou umidade no status do dispositivo. Verifique os códigos de status retornados pela Tuya."
+    );
   }
 
   return { temperature, humidity };
-
 }
 
 // Função para obter e atualizar a temperatura atual do dispositivo

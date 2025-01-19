@@ -162,15 +162,15 @@ router.get("/status", async (req, res) => {
     const deviceStatus = await getDeviceStatus(accessToken, deviceId);
 
     // Extrai informações relevantes
-    const { va_temperature, va_humidity } = extractTemperatureAndHumidity(deviceStatus);
+    const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
 
     const powerStatus = deviceStatus.find(device => device.id === deviceId)?.status.find(s => s.code === "switch_1")?.value;
 
     // Retorna as informações no formato JSON
     res.json({
       success: true,
-      va_temperature,
-      va_humidity,
+      temperature,
+      humidity,
       powerStatus: powerStatus ? "Ligado" : "Desligado"
     });
   
