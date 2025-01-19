@@ -7,7 +7,7 @@ const ClientID = "7j3tg7crd8gxr4rdsu7s";
 const ClientSecret = "ed01098ca59c40d2845de5ef25bb1dc9";
 const BaseUrl = "https://openapi.tuyaus.com";
 const EmptyBodyEncoded = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-const deviceIds = "eb8faf00e42469ffaahezh";
+const deviceIds = { "eb8faf00e42469ffaahezh" : "ebf025fcebde746b5akmak" };
 
 // Função para gerar a assinatura HMAC-SHA256
 function generateSignature(stringToSign, secret) {
@@ -106,7 +106,7 @@ function extractTemperatureAndHumidity(deviceStatus) {
   let humidity = null;
 
   deviceStatus.forEach((device) => {
-    console.log(`Status do dispositivo (${device.id}):`, device.status);
+    console.log(`Status do dispositivo (${device.ids}):`, device.status);
     device.status.forEach((item) => {
       if (item.code === "va_temperature") {
         temperature = item.value / 10; // Normalizar para °C
