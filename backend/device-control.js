@@ -153,3 +153,32 @@ router.post("/set-temperature", (req, res) => {
 });
 
 module.exports = router;
+
+// Rota para obter o estado atual do dispositivo
+router.get("/status", async (req, res) => {
+  try {
+    // Obtem o token de acesso
+    const accessToken = await getAccessToken();
+
+    // Obtém o status do dispositivo
+    const deviceStatus = await getDeviceStatus(accessToken, deviceId);
+
+    // Extrai informações relevantes
+    const { temperature, humidity } = extractTemperatureAndHumidity(deviceStatus);
+
+    const powerStatus = deviceStatus.find(device => device.id === deviceId)?.status.find(s => s.code === "switch_1")?.value;
+
+    // Retorna as informações no formato JSON
+    res.json({
+      success: true,
+      temperature,
+      humidity,
+      powerStatus: powerStatus ? "Ligado" : "Desligado"
+    });
+  
+  } catch (error) {
+    console.error("Erro ao obter o estado do dispositivo:", error.message);
+    res.status(500).json({ success: false, message: "Erro ao obter o estado do dispositivo.", error: error.message });
+  }
+});
+
