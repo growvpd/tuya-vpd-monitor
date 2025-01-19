@@ -1,7 +1,8 @@
 const express = require("express");
 const axios = require("axios");
 const crypto = require("crypto");
-const { ClientID, ClientSecret, generateSignature, EmptyBodyEncoded, debug, temperature } = require("./tuya");
+const { ClientID, ClientSecret, generateSignature, EmptyBodyEncoded, debug, getTemperature  } = require("./tuya");
+const temperature = getTemperature();
 
 const router = express.Router();
 const deviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo

@@ -135,7 +135,7 @@ module.exports = {
   BaseUrl,
   EmptyBodyEncoded,
   debug,
-  temperature
+  getTemperature: () => temperature,
 };
   
 // Apenas para testes manuais ou depuração, não necessário na execução contínua
