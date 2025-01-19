@@ -1,7 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const crypto = require("crypto");
-const { ClientID, ClientSecret, generateSignature, EmptyBodyEncoded, debug, currentTemperature } = require("./tuya");
+const { ClientID, ClientSecret, generateSignature, EmptyBodyEncoded, debug, temperature } = require("./tuya");
 
 const router = express.Router();
 const deviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo
@@ -104,18 +104,18 @@ async function monitorTemperature() {
     // Aqui você deve obter a temperatura de um sensor ou fonte externa.
     // Exemplo: obtendo de um endpoint ou banco de dados.
 
-    console.log("Temperatura atual:", currentTemperature);
+    console.log("Temperatura atual:", temperature);
     console.log("Temperatura minima:", minTemperature);
     console.log("Temperatura minima:", maxTemperature);
 
-    if (currentTemperature >= maxTemperature) {
-      console.log("Temperatura:", currentTemperature," maior que a maxTemperature:", maxTemperature, ", ligando o ar-condicionado...");
+    if (temperature >= maxTemperature) {
+      console.log("Temperatura:", temperature," maior que a maxTemperature:", maxTemperature, ", ligando o ar-condicionado...");
       await sendDeviceCommand("switch_1", true);
-    } else if (currentTemperature <= minTemperature) {
-      console.log("Temperatura:", currentTemperature," menor que a minTemperature:", minTemperature, ", desligando o ar-condicionado...");
+    } else if (temperature <= minTemperature) {
+      console.log("Temperatura:", temperature," menor que a minTemperature:", minTemperature, ", desligando o ar-condicionado...");
       await sendDeviceCommand("switch_1", false);
     } else {
-      console.log("Temperatura dentro da faixa aceitável:", currentTemperature, " nenhuma ação necessária.");
+      console.log("Temperatura dentro da faixa aceitável:", temperature, " nenhuma ação necessária.");
     }
   } catch (error) {
     console.error("Erro ao monitorar temperatura:", error.message);

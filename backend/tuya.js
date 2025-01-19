@@ -121,9 +121,6 @@ function extractTemperatureAndHumidity(deviceStatus) {
   return { temperature, humidity };
 }
 
-const currentTemperature = temperature;
-console.log("Temperatura enviada para ar condicionado:", JSON.stringify(currentTemperature, null, 2));
-
 // Exportações
 module.exports = {
   getAccessToken,
@@ -138,7 +135,7 @@ module.exports = {
   BaseUrl,
   EmptyBodyEncoded,
   debug,
-  currentTemperature
+  temperature
 };
   
 // Apenas para testes manuais ou depuração, não necessário na execução contínua
