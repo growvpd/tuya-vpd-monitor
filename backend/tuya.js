@@ -122,14 +122,21 @@ function extractTemperatureAndHumidity(deviceStatus) {
     throw new Error('Não foi possível encontrar temperatura ou umidade no status do dispositivo.');
   }
 
-    // Atualiza as temperatura de check para uso externo
-    checkTemperature = temperature;
-
-  return { temperature, humidity, checkTemperature };
+  return { temperature, humidity };
 
 }
 
-console.log("Temperatura:", JSON.stringify(checkTemperature, null, 2));
+// Função para obter temperatura atual
+async function updateTemperature() {
+  try {
+    const deviceStatus = await fetchTuyaDataWithCache(deviceIds);
+    const { temperature } = extractTemperatureAndHumidity(deviceStatus);
+    checkTemperature = temperature; // Atualiza a variável global
+    console.log("Temperatura check atualizada:", checkTemperature);
+  } catch (error) {
+    console.error("Erro ao atualizar temperatura check:", error.message);
+  }
+}
 
 // Exportações
 module.exports = {

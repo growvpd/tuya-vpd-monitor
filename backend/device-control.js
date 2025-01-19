@@ -2,7 +2,6 @@ const express = require("express");
 const axios = require("axios");
 const crypto = require("crypto");
 const { ClientID, ClientSecret, generateSignature, EmptyBodyEncoded, debug, getTemperature  } = require("./tuya");
-const checkTemperature = getTemperature();
 
 const router = express.Router();
 const deviceId = "ebf025fcebde746b5akmak"; // ID do dispositivo
@@ -102,9 +101,8 @@ async function sendDeviceCommand(commandCode, commandValue) {
  */
 async function monitorTemperature() {
   try {
-    // Aqui você deve obter a temperatura de um sensor ou fonte externa.
-    // Exemplo: obtendo de um endpoint ou banco de dados.
-
+    await updateTemperature(); // Atualiza a temperatura antes de monitorar
+    const checkTemperature = getTemperature();
     console.log("Temperatura atual:", checkTemperature);
     console.log("Temperatura mínima:", minTemperature);
     console.log("Temperatura máxima:", maxTemperature);
