@@ -4,215 +4,118 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Controle de Dispositivos</title>
+  <link rel="stylesheet" href="styles.css">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
+    /* Inline styling for specific components */
+    .device-control {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      background-color: #f4f4f4;
-      height: 100vh;
+      gap: 1.5rem;
+      padding: 2rem;
+      font-family: Arial, sans-serif;
     }
 
-    .container {
-      background: white;
+    .card {
+      background: #f9f9f9;
       border-radius: 10px;
+      padding: 1.5rem;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      width: 90%;
-      max-width: 400px;
       text-align: center;
+      width: 80%;
+      max-width: 500px;
     }
 
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 20px;
-      color: #333;
+    .card h2 {
+      margin-bottom: 1rem;
     }
 
-    .status-display {
-      margin: 20px 0;
-      padding: 10px;
-      border-radius: 8px;
-      background: #f0f0f0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .status-display span {
-      font-size: 1.2rem;
-      color: #666;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
+    .card button {
+      margin-top: 1rem;
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
+      color: white;
       border: none;
       border-radius: 5px;
-      margin: 10px 0;
-      font-size: 1rem;
       cursor: pointer;
-      transition: background-color 0.3s;
     }
 
-    button#turnOn {
-      background-color: #4caf50;
-      color: white;
+    .btn-on {
+      background-color: #4CAF50;
     }
 
-    button#turnOn:hover {
-      background-color: #45a049;
-    }
-
-    button#turnOff {
+    .btn-off {
       background-color: #f44336;
-      color: white;
     }
 
-    button#turnOff:hover {
-      background-color: #e53935;
-    }
-
-    .temperature-settings {
-      margin-top: 20px;
-    }
-
-    .temperature-settings label {
-      display: block;
-      margin-top: 10px;
-      text-align: left;
-      color: #555;
-    }
-
-    .temperature-settings input {
-      width: calc(100% - 20px);
-      margin: 5px 0;
-      padding: 10px;
+    input[type="number"] {
+      width: 100px;
+      padding: 0.5rem;
+      margin: 0.5rem;
       font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    button#updateTemp {
-      background-color: #2196f3;
-      color: white;
-    }
-
-    button#updateTemp:hover {
-      background-color: #1e88e5;
-    }
-
-    .temperature-values {
-      display: flex;
-      justify-content: space-between;
-      margin: 15px 0;
-    }
-
-    .temperature-values div {
-      width: 45%;
-      background: #f0f0f0;
-      border-radius: 8px;
-      padding: 10px;
-      text-align: center;
-    }
-
-    .temperature-values div span {
-      display: block;
-      font-size: 1.2rem;
-      color: #333;
-    }
-
-    .temperature-values div small {
-      font-size: 0.8rem;
-      color: #666;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="device-control">
     <h1>Controle de Dispositivos</h1>
 
-    <!-- Display de Status -->
-    <div class="status-display">
-      <span><strong> Status do Ar condicionado:<id="deviceStatus"> </strong></span>
+    <!-- Device Status Card -->
+    <div class="card" id="statusCard">
+      <h2>Status do Dispositivo</h2>
+      <p id="deviceStatus">Desconhecido</p>
+      <button id="turnOn" class="btn-on">Ligar Dispositivo</button>
+      <button id="turnOff" class="btn-off">Desligar Dispositivo</button>
     </div>
 
-    <!-- Botões de Controle -->
-    <button id="turnOn">Ligar Dispositivo</button>
-    <button id="turnOff">Desligar Dispositivo</button>
-
-    <!-- Valores de Temperatura -->
-    <div class="temperature-values">
-      <div>
-        <span id="minTemperature">24°C</span>
-        <small>Temperatura Mínima</small>
-      </div>
-      <div>
-        <span id="maxTemperature">26°C</span>
-        <small>Temperatura Máxima</small>
-      </div>
-    </div>
-
-    <!-- Configuração de Temperaturas -->
-    <div class="temperature-settings">
-      <label for="minTemp">Temperatura Mínima (Desliga):</label>
+    <!-- Temperature Configuration Card -->
+    <div class="card">
+      <h2>Configuração de Temperaturas</h2>
+      <p>Temperatura Mínima: <span id="currentMinTemp">-</span>°C</p>
+      <p>Temperatura Máxima: <span id="currentMaxTemp">-</span>°C</p>
+      <label for="minTemp">Nova Temperatura Mínima:</label>
       <input type="number" id="minTemp" placeholder="Ex: 24">
-      <label for="maxTemp">Temperatura Máxima (Liga):</label>
+      <label for="maxTemp">Nova Temperatura Máxima:</label>
       <input type="number" id="maxTemp" placeholder="Ex: 26">
-      <button id="updateTemp">Atualizar Configuração</button>
+      <button id="setTemp" class="btn-on">Atualizar Configuração</button>
     </div>
   </div>
 
   <script>
-    // Atualiza o status do dispositivo
-    function updateDeviceStatus(status) {
-      const deviceStatus = document.getElementById("deviceStatus");
-      deviceStatus.textContent = status ? "Ligado" : "Desligado";
-      deviceStatus.style.color = status ? "green" : "red";
+    // Update Device Status
+    async function updateDeviceStatus() {
+      const status = await fetch('/api/device-control/status'); // Backend should implement `/status`
+      const result = await status.json();
+      document.getElementById("deviceStatus").innerText = result.isOn ? "Ligado" : "Desligado";
     }
 
-    // Atualiza as temperaturas exibidas
-    function updateTemperatureDisplay(min, max) {
-      document.getElementById("minTemperature").textContent = `${min}°C`;
-      document.getElementById("maxTemperature").textContent = `${max}°C`;
-    }
-
-    // Ligar o dispositivo
+    // Attach Event Listeners for Buttons
     document.getElementById("turnOn").addEventListener("click", async () => {
-      const response = await fetch("/backend/device-control/on", { method: "POST" });
-      const result = await response.json();
-      alert(result.message || "Erro ao enviar comando.");
-      if (result.success) updateDeviceStatus(true);
+      await fetch("/api/device-control/on", { method: "POST" });
+      updateDeviceStatus();
     });
 
-    // Desligar o dispositivo
     document.getElementById("turnOff").addEventListener("click", async () => {
-      const response = await fetch("/backend/device-control/off", { method: "POST" });
-      const result = await response.json();
-      alert(result.message || "Erro ao enviar comando.");
-      if (result.success) updateDeviceStatus(false);
+      await fetch("/api/device-control/off", { method: "POST" });
+      updateDeviceStatus();
     });
 
-    // Atualizar temperaturas configuradas
-    document.getElementById("updateTemp").addEventListener("click", async () => {
+    document.getElementById("setTemp").addEventListener("click", async () => {
       const minTemp = document.getElementById("minTemp").value;
       const maxTemp = document.getElementById("maxTemp").value;
-      const response = await fetch("/backend/device-control/set-temperature", {
+      const response = await fetch("/api/device-control/set-temperature", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ minTemp, maxTemp }),
       });
       const result = await response.json();
+      document.getElementById("currentMinTemp").innerText = result.minTemperature || "-";
+      document.getElementById("currentMaxTemp").innerText = result.maxTemperature || "-";
       alert(result.message || "Erro ao atualizar temperaturas.");
-      if (result.success) updateTemperatureDisplay(minTemp, maxTemp);
     });
 
-    // Inicializa com as temperaturas padrão
-    updateTemperatureDisplay(24, 26);
+    // Initial Setup
+    updateDeviceStatus();
   </script>
 </body>
 </html>
