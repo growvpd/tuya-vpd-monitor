@@ -97,6 +97,9 @@ async function fetchTuyaDataWithCache(deviceIds) {
   return cachedData;
 }
 
+// Variavel para checar temperatura no ar
+let checkTemperature = null;
+
 // Função para extrair temperatura e umidade do status do dispositivo
 function extractTemperatureAndHumidity(deviceStatus) {
   let temperature = null;
@@ -118,7 +121,12 @@ function extractTemperatureAndHumidity(deviceStatus) {
   if (temperature === null || humidity === null) {
     throw new Error('Não foi possível encontrar temperatura ou umidade no status do dispositivo.');
   }
-  return { temperature, humidity };
+
+    // Atualiza as temperatura de check para uso externo
+    checkTemperature = temperature;
+
+  return { temperature, humidity, checkTemperature };
+
 }
 
 // Exportações
@@ -135,7 +143,7 @@ module.exports = {
   BaseUrl,
   EmptyBodyEncoded,
   debug,
-  getTemperature: () => temperature,
+  getTemperature: () => checkTemperature,
 };
   
 // Apenas para testes manuais ou depuração, não necessário na execução contínua
